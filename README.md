@@ -1,6 +1,8 @@
 # Làm sạch trình duyệt Cốc Cốc
 
-Tắt chạy ngầm, tắt tự cập nhập và tắt 1 số tính năng giúp tăng cường bảo mật, tốc độ, riêng tư ... 
+- Tắt chạy ngầm, tắt tự cập nhập và tắt 1 số tính năng giúp tăng cường bảo mật, tốc độ, riêng tư ... 
+- Cốc Cốc Extensions: giữ lại Download video & audio
+- Extensions bổ xung mặc định: Blank New Tab Page (giúp làm sạch quảng cáo khi mở tab mới)
 ### Cài đặt
 - Chạy `PowerShell` với quyền `Administrator` để cài đặt lại Cốc Cốc
 ```
