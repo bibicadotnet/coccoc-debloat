@@ -1,0 +1,127 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc]
+
+; Tắt Access Code Cast
+"AccessCodeCastEnabled"=dword:00000000
+
+; Tắt Nhãn hình ảnh cho trợ năng
+"AccessibilityImageLabelsEnabled"=dword:00000000
+
+; Tắt Trang lỗi thay thế
+"AlternateErrorPagesEnabled"=dword:00000000
+
+; Bật Cài đặt mô hình nền cục bộ AI (GenAI)
+"GenAILocalFoundationalModelSettings"=dword:00000001
+
+; Tắt Cảnh báo mật khẩu bị rò rỉ
+"PasswordDismissCompromisedAlertEnabled"=dword:00000000
+
+; Tắt Kích hoạt cảnh báo bảo vệ mật khẩu
+"PasswordProtectionWarningTrigger"=dword:00000000
+
+; Tắt Máy tạo mã QR
+"QRCodeGeneratorEnabled"=dword:00000000
+
+; Tắt Hỗ trợ tập hợp các trang web liên quan
+"RelatedWebsiteSetsEnabled"=dword:00000000
+
+; Tắt Gỡ lỗi từ xa
+"RemoteDebuggingAllowed"=dword:00000000
+
+; Tắt Hỗ trợ hồ sơ roaming
+"RoamingProfileSupportEnabled"=dword:00000000
+
+; Tắt Quét sâu Safe Browsing
+"SafeBrowsingDeepScanningEnabled"=dword:00000000
+
+; Tắt Kiểm tra thời gian thực qua proxy Safe Browsing
+"SafeBrowsingProxiedRealTimeChecksAllowed"=dword:00000000
+
+; Tắt Khảo sát Safe Browsing
+"SafeBrowsingSurveysEnabled"=dword:00000000
+
+; Tắt Danh sách mua sắm
+"ShoppingListEnabled"=dword:00000000
+
+; Tắt Tìm kiếm bên cạnh (Side Search)
+"SideSearchEnabled"=dword:00000000
+
+; Tắt Chặn đăng nhập trái phép
+"SigninInterceptionEnabled"=dword:00000000
+
+; Tắt Gửi phản hồi người dùng
+"UserFeedbackAllowed"=dword:00000000
+
+; Tắt Make searches and browsing better
+"UrlKeyedAnonymizedDataCollectionEnabled"=dword:00000000
+
+; Bật Improve search suggestions
+"SearchSuggestEnabled"=dword:00000001
+
+; Tắt "Autofill và liên quan đến mật khẩu"
+"AutofillAddressEnabled"=dword:00000000
+"AutofillCreditCardEnabled"=dword:00000000
+"PasswordManagerEnabled"=dword:00000000
+
+; Tắt "Allow sites to check if you have payment methods saved"
+"PaymentMethodQueryEnabled"=dword:00000000
+
+; Tắt "Continue running background apps when Chromium is closed"
+"BackgroundModeEnabled"=dword:00000000
+
+; Tắt Ad topics Site-suggested ads Ad measurement
+"PrivacySandboxAdTopicsEnabled"=dword:00000000
+"PrivacySandboxAdMeasurementEnabled"=dword:00000000
+"PrivacySandboxSiteEnabledAdsEnabled"=dword:00000000
+"PrivacySandboxPromptEnabled"=dword:00000000
+
+; Tắt Spell check / Kiểm tra chính tả
+"SpellcheckEnabled"=dword:00000000
+
+; Cho phép tiếp tục hỗ trợ các tiện ích Manifest V2
+"ExtensionManifestV2Availability"=dword:00000002
+
+; Tắt Help improve security on the web for everyone
+"SafeBrowsingExtendedReportingEnabled"=dword:00000000
+
+; Cấu hình DNS bảo mật tự động (tùy chỉnh DNS Cloudflare)
+"DnsOverHttpsMode"="automatic"
+"DnsOverHttpsTemplates"="https://cloudflare-dns.com/dns-query{?dns}"
+
+; Hiển thị đầy đủ URL trên thanh địa chỉ
+"ShowFullUrlsInAddressBar"=dword:00000001
+
+; Tắt định vị ở mọi trang (hiển thị khi truy cập trang)
+"DefaultGeolocationSetting"=dword:00000002
+
+; Tắt thông báo ở mọi trang (hiển thị khi truy cập trang)
+"DefaultNotificationsSetting"=dword:00000002
+
+; Bật Block third-party cookies
+"BlockThirdPartyCookies"=dword:00000001
+
+; Bật Safe Browsing Standard protection
+"SafeBrowsingProtectionLevel"=dword:00000001
+
+; Tắt Warn you if a password was compromised in a data breach
+"PasswordLeakDetectionEnabled"=dword:00000000
+
+; Bật Memory Saver
+"HighEfficiencyModeEnabled"=dword:00000001
+
+; Bật Memory Saver -> Maximum memory savings
+"MemorySaverModeSavings"=dword:00000002
+
+; Tắt Preload pages
+"NetworkPredictionOptions"=dword:00000002
+
+; Bật Use graphics acceleration when available
+"HardwareAccelerationModeEnabled"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc\ExtensionInstallBlocklist]
+"1"="gfgbmghkdjckppeomloefmbphdfmokgd"
+"2"="afaljjbleihmahhpckngondmgohleljb"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc\ExtensionInstallForcelist]
+"1"="jaadjnlkjnhohljficgoddcjmndjfdmi"
