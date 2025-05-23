@@ -1,98 +1,165 @@
 <#
 .SYNOPSIS
-    Automated Coc Coc Browser Silent Installer
+    Cốc Cốc Browser Silent Installer - Giúp giao diện Cốc Cốc sạch như nguyên bản Chromium
 .DESCRIPTION
-    This script performs silent installation of Coc Coc browser with:
-    - Automatic download from official source
-    - Silent installation
-    - Removal of auto-update tasks
-    - Registry optimizations
+1. Tự động tải xuống từ nguồn chính thức
+2. Cài đặt không cần tương tác (silent install)
+3. Gỡ bỏ các tác vụ tự động cập nhật
+4. Tối ưu hóa cấu hình Registry
 .NOTES
     Requires: Administrator privileges
     Version:  1.1
 #>
 
-# Check for administrator privileges
+# Kiểm tra Admin
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Host "This script requires Administrator privileges!" -ForegroundColor Red
-    Write-Host "Please run PowerShell as Administrator and try again." -ForegroundColor Yellow
-    Start-Sleep 3
+    Write-Host "Yêu cầu quyền Administrator!" -ForegroundColor Red
     exit 1
 }
 
-# Step 1: Download installer
+# ---------- PHẦN CÀI ĐẶT ----------
 $setupPath = "$env:TEMP\coccoc_setup.exe"
-Write-Host "[1/4] Downloading Coc Coc installer..."
 
-try {
-    # Using WebClient for better compatibility
-    (New-Object Net.WebClient).DownloadFile(
-        'https://files2.coccoc.com/browser/x64/coccoc_en_machine.exe',
-        $setupPath
-    )
-    Write-Host "Download completed successfully" -ForegroundColor Green
-}
-catch {
-    Write-Host "Download failed: $_" -ForegroundColor Red
-    exit 1
-}
+# 1. Dọn dẹp toàn bộ trước khi cài
+Write-Host "[1/4] Đang dọn dẹp bản cài cũ..."
+$cocPaths = @(
+    "${env:ProgramFiles}\CocCoc",
+    "${env:ProgramFiles(x86)}\CocCoc"
+)
 
-# Step 2: Silent installation
-Write-Host "[2/4] Installing Coc Coc (silent mode)..."
-try {
-    $installProcess = Start-Process -FilePath $setupPath -ArgumentList "/silent /install" -PassThru -Wait
-    
-    if ($installProcess.ExitCode -ne 0) {
-        throw "Installation failed with exit code $($installProcess.ExitCode)"
+foreach ($path in $cocPaths) {
+    if (Test-Path $path) {
+        try {
+            Stop-Process -Name "browser*" -Force -ErrorAction SilentlyContinue
+            Takeown /F $path /R /A /D Y 2>&1 | Out-Null
+            Icacls $path /grant:r "Administrators:F" /T /C 2>&1 | Out-Null
+            Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Host "✓ Đã dọn dẹp: $path" -ForegroundColor Green
+        } catch {
+            Write-Host "! Không thể xóa: $path" -ForegroundColor Yellow
+        }
     }
-    Write-Host "Installation completed successfully" -ForegroundColor Green
 }
-catch {
-    Write-Host "Installation error: $_" -ForegroundColor Red
+
+# 2. Tải file mới
+Write-Host "[2/4] Đang tải bộ cài mới..."
+try {
+    (New-Object Net.WebClient).DownloadFile('https://files2.coccoc.com/browser/x64/coccoc_en_machine.exe', $setupPath)
+    Write-Host "✓ Tải thành công" -ForegroundColor Green
+} catch {
+    Write-Host "✗ Lỗi tải file: $_" -ForegroundColor Red
     exit 1
 }
 
-# Step 3: Remove auto-update tasks
-Write-Host "[3/4] Removing auto-update tasks..."
+# 3. Cài đặt
+Write-Host "[3/4] Đang cài đặt..."
+try {
+    $process = Start-Process -FilePath $setupPath -ArgumentList "/silent /install" -PassThru -Wait
+    if ($process.ExitCode -ne 0) { throw "Mã lỗi: $($process.ExitCode)" }
+    Write-Host "✓ Cài đặt hoàn tất" -ForegroundColor Green
+} catch {
+    Write-Host "✗ Lỗi cài đặt: $_" -ForegroundColor Red
+    exit 1
+}
+
+# 4. Dọn dẹp file tạm
+Write-Host "[4/4] Đang hoàn tất..."
+Remove-Item $setupPath -Force -ErrorAction SilentlyContinue
+
+# Bước 3: xóa task tự động update
+Write-Host "[3/5] Xóa task tự động update..."
 $tasksToRemove = @(
     "CocCocUpdateTaskMachineCore",
-    "CocCocUpdateTaskMachineUA"
+    "CocCocUpdateTaskMachineUA",
+    "CocCoc*"
 )
 
 foreach ($task in $tasksToRemove) {
     try {
         schtasks /Delete /TN $task /F 2>$null
-        Write-Host "Removed task: $task" -ForegroundColor Cyan
+        Write-Host "Đã xóa task: $task" -ForegroundColor Cyan
     }
     catch {
-        Write-Host "Warning: Could not remove task $task" -ForegroundColor Yellow
+        Write-Host "Không tìm thấy task $task để xóa" -ForegroundColor Yellow
     }
 }
 
-# Step 4: Apply registry optimizations
-$regPath = "$env:TEMP\coccoc-debloat.reg"
-Write-Host "[4/4] Applying performance tweaks..."
+# Bước 4: xóa và phân quyền lại CocCocUpdate CocCocCrashHandler CocCocCrashHandler64
+# Yêu cầu quyền Admin
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    exit
+}
 
+Write-Host "Đang xử lý CocCocUpdate và CocCocCrashHandler ..." -ForegroundColor Cyan
+
+# Danh sách file cần xử lý (tự động phát hiện cả 32-bit và 64-bit)
+$targetFiles = @(
+    # CrashHandlers trong thư mục version (vd: 2.9.3.21)
+    "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler.exe",
+    "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler64.exe",
+    "${env:ProgramFiles(x86)}\CocCoc\Update\*\CocCocCrashHandler.exe",
+    "${env:ProgramFiles(x86)}\CocCoc\Update\*\CocCocCrashHandler64.exe",
+    
+    # File update chính
+    "${env:ProgramFiles}\CocCoc\Update\CocCocUpdate.exe",
+    "${env:ProgramFiles(x86)}\CocCoc\Update\CocCocUpdate.exe"
+)
+
+foreach ($file in (Get-Item $targetFiles -ErrorAction SilentlyContinue)) {
+    try {
+        # 1. Dừng tiến trình đang chạy
+        $processName = $file.BaseName
+        Stop-Process -Name $processName -Force -ErrorAction SilentlyContinue
+
+        # 2. Chiếm quyền và xóa
+        Takeown /F $file.FullName /A 2>&1 | Out-Null
+        Icacls $file.FullName /grant:r "Administrators:F" 2>&1 | Out-Null
+        Remove-Item $file.FullName -Force
+
+        # 3. Tạo file khóa (ReadOnly + Hidden + System)
+        New-Item -Path $file.FullName -ItemType File -Force | Out-Null
+        (Get-Item $file.FullName).Attributes = "ReadOnly, Hidden, System"
+        
+        Write-Host "[✓] Đã xử lý: $($file.FullName)" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "[!] Lỗi $($file.FullName): $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+Write-Host "`nHOÀN TẤT! Đã xử lý xong:" -BackgroundColor DarkGreen
+Write-Host "- CocCocCrashHandler.exe (32-bit và 64-bit)"
+Write-Host "- CocCocCrashHandler64.exe (32-bit và 64-bit)"
+Write-Host "- CocCocUpdate.exe (32-bit và 64-bit)"
+
+# Bước 4: Áp dụng registry optimizations
+$regPath = "$env:TEMP\coccoc-debloat.reg"
+Write-Host "[5/5] Áp dụng registry optimizations..."
 try {
+    if (-not (Test-Path "$env:TEMP")) { New-Item -Path "$env:TEMP" -ItemType Directory -Force }
+
     (New-Object Net.WebClient).DownloadFile(
         'https://raw.githubusercontent.com/bibicadotnet/coccoc-debloat/main/coccoc-debloat.reg',
         $regPath
     )
     
-    # Import registry silently
     Start-Process "regedit.exe" -ArgumentList "/s `"$regPath`"" -Wait
-    Write-Host "Registry optimizations applied" -ForegroundColor Green
+    Write-Host "Đã áp dụng registry tweaks" -ForegroundColor Green
 }
 catch {
-    Write-Host "Warning: Could not apply registry tweaks: $_" -ForegroundColor Yellow
+    Write-Host "Không tải được file registry: $_" -ForegroundColor Yellow
 }
 
-# Cleanup temporary files
-Remove-Item $setupPath -ErrorAction SilentlyContinue
-Remove-Item $regPath -ErrorAction SilentlyContinue
+# Dọn dẹp
+Remove-Item $setupPath, $regPath -ErrorAction SilentlyContinue
 
-# Completion message
-Write-Host "`nCoc Coc installation completed successfully!" -ForegroundColor Green
-Write-Host "Optimizations applied:" -ForegroundColor White
-Write-Host "- Disabled auto-update tasks" -ForegroundColor White
-Write-Host "- Applied performance tweaks" -ForegroundColor White
+Write-Host "`nHOÀN TẤT!" -BackgroundColor DarkGreen
+Write-Host "- Đã cài đặt Cốc Cốc"
+Write-Host "- Đã xóa tự động update"
+Write-Host "- Đã xóa CrashHandlers"
+Write-Host "- Đã áp dụng registry optimizations"
+Write-Host "`nTHÔNG BÁO: Để cập nhật Cốc Cốc khi cần, vui lòng:" -ForegroundColor Cyan -BackgroundColor DarkGreen
+Write-Host "1. Mở PowerShell với quyền Administrator" -ForegroundColor White
+Write-Host "2. Chạy lệnh sau: irm https://go.bibica.net/coccoc | iex" -ForegroundColor Yellow
+Write-Host "3. Chờ quá trình cài đặt hoàn tất" -ForegroundColor White
