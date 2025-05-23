@@ -1,4 +1,4 @@
-# Giúp giao diện Cốc Cốc sạch như Chromium nguyên bản
+# Giao diện Cốc Cốc sạch như Chromium nguyên bản
 
 - Tắt chạy ngầm, tắt tự cập nhập và tắt 1 số tính năng giúp tăng cường bảo mật, tốc độ, riêng tư ... 
 - Cốc Cốc Extensions: giữ lại Download video & audio
