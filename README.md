@@ -8,7 +8,7 @@
 ```
 irm https://go.bibica.net/coccoc | iex
 ```
-Hoặc download file [coccoc.bat](https://github.com/bibicadotnet/chromium-debloat/blob/main/chromium.bat) về PC, sau cập nhập cho tiện
+- Hoặc download file [coccoc.bat](https://github.com/bibicadotnet/chromium-debloat/blob/main/chromium.bat) về PC, sau cập nhập cho tiện
 ### Tùy chỉnh thêm
 - Tắt split view
 
