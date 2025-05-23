@@ -3,7 +3,7 @@
 - Tắt chạy ngầm, tắt tự cập nhập và tắt 1 số tính năng giúp tăng cường bảo mật, tốc độ, riêng tư ... 
 - Cốc Cốc Extensions: giữ lại Download video & audio
 - Extensions bổ xung mặc định: Blank New Tab Page (giúp làm sạch quảng cáo khi mở tab mới)
-### Cài đặt
+### Cài đặt và cập nhập
 - Chạy `PowerShell` với quyền `Administrator` để cài đặt/cập nhập lại Cốc Cốc
 ```
 irm https://go.bibica.net/coccoc | iex
