@@ -128,10 +128,7 @@ foreach ($file in (Get-Item $targetFiles -ErrorAction SilentlyContinue)) {
     }
 }
 
-Write-Host "`nHOÀN TẤT! Đã xử lý xong:" -BackgroundColor DarkGreen
-Write-Host "- CocCocCrashHandler.exe (32-bit và 64-bit)"
-Write-Host "- CocCocCrashHandler64.exe (32-bit và 64-bit)"
-Write-Host "- CocCocUpdate.exe (32-bit và 64-bit)"
+Write-Host "`Đã xử lý xong CocCocUpdate và CocCocCrashHandler" 
 
 # Bước 4: Áp dụng registry optimizations
 $regPath = "$env:TEMP\coccoc-debloat.reg"
