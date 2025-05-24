@@ -8,7 +8,7 @@
 4. Tối ưu hóa cấu hình Registry
 .NOTES
     Requires: Administrator privileges
-    Version:  1.1
+    Version:  1.0
 #>
 
 # Kiểm tra Admin
