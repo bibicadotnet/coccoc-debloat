@@ -17,13 +17,13 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit 1
 }
 
-Write-Host "`Cốc Cốc Browser Silent Installer v1.0" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc Browser Silent Installer v1.0" -BackgroundColor DarkGreen
 
 # ---------- PHẦN CÀI ĐẶT ----------
 $setupPath = "$env:TEMP\coccoc_setup.exe"
 
 # 1. Dọn dẹp toàn bộ trước khi cài
-Write-Host "n[1/4] Đang dọn dẹp bản cài cũ..."
+Write-Host "`n[1/4] Đang dọn dẹp bản cài cũ..."
 $cocPaths = @(
     "${env:ProgramFiles}\CocCoc",
     "${env:ProgramFiles(x86)}\CocCoc"
