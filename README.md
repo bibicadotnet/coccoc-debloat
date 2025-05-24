@@ -1,8 +1,13 @@
 # Giao diện Cốc Cốc sạch như Chromium nguyên bản
 
-- Tắt chạy ngầm, tắt tự cập nhập và tắt 1 số tính năng giúp tăng cường bảo mật, tốc độ, riêng tư ... 
-- Cốc Cốc Extensions: giữ lại Download video & audio
-- Extensions bổ xung mặc định: Blank New Tab Page (giúp làm sạch quảng cáo khi mở tab mới)
+- Tắt các tiện ích mặc định (Từ Điển, Rủng Rỉnh)
+- Thay thế trang newtab bằng một trang trắng sạch sẽ
+- Tắt mọi tiến trình chạy ngầm và cập nhật tự động.
+- Tắt gần như mọi thứ có thể gửi thông tin về Google hay Cốc Cốc
+- Thiết lập quyền riêng tư ở mức nghiêm ngặt: tắt cookie của bên thứ ba, tắt thông báo, tắt định vị
+- Sử dụng tự động DNS Cloudflare để tăng tốc và bảo vệ quyền riêng tư.
+- Bật tính năng tiết kiệm RAM (Memory Saver)
+- .....
 ### Cài đặt và cập nhập
 - Chạy `PowerShell` với quyền `Administrator` để cài đặt/cập nhập lại Cốc Cốc
 ```
