@@ -13,7 +13,7 @@
 ```
 irm https://go.bibica.net/coccoc | iex
 ```
-- Hoặc download file [coccoc.bat](https://github.com/bibicadotnet/coccoc-debloat/blob/main/coccoc.bat) về PC, sau cập nhập cho tiện
+- Hoặc chạy file [coccoc.bat](https://github.com/bibicadotnet/coccoc-debloat/archive/latest.zip) trực tiếp từ PC, sau cập nhập cho tiện
 ### Tùy chỉnh thêm
 - Tắt split view
 
