@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Tạo profile mới cho trình duyệt Cốc Cốc (mặc định tắt SplitView và SidePanel)
 .DESCRIPTION
@@ -7,9 +7,13 @@
     - Hỗ trợ chọn đường dẫn chứa profile (có thể bỏ qua)
 #>
 
+# Fix encoding issues
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+chcp 65001 | Out-Null
+
 #region -----[ INITIALIZATION ]-----
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "`n⚠ VUI LÒNG CHẠY BẰNG QUYỀN ADMIN`n" -ForegroundColor Red
+    Write-Host "`n[!] VUI LONG CHAY BANG QUYEN ADMIN`n" -ForegroundColor Red
     pause
     exit
 }
