@@ -5,7 +5,7 @@
 - Thay thế trang newtab bằng một trang trắng sạch sẽ
 - Tắt mọi tiến trình chạy ngầm và cập nhật tự động.
 - Tắt gần như mọi thứ có thể gửi thông tin về Google hay Cốc Cốc
-- Thiết lập quyền riêng tư ở mức nghiêm ngặt: tắt cookie của bên thứ ba, tắt thông báo, tắt định vị
+- Thiết lập quyền riêng tư ở mức nghiêm ngặt: tắt cookie của bên thứ ba, tắt thông báo, tắt định vị, tắt cảm biến chuyển động
 - Sử dụng tự động DNS Cloudflare để tăng tốc và bảo vệ quyền riêng tư.
 - Bật tính năng tiết kiệm RAM (Memory Saver)
 - .....
