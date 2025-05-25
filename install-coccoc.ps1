@@ -22,7 +22,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit 1
 }
 
-Write-Host "`nCốc Cốc Browser Silent Installer v1.1" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc Browser Silent Installer v1.1.1" -BackgroundColor DarkGreen
 
 # ---------- PHẦN CÀI ĐẶT ----------
 $setupPath = "$env:TEMP\coccoc_setup.exe"
