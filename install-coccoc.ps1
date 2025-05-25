@@ -6,6 +6,7 @@
 2. Cài đặt không cần tương tác (silent install)
 3. Gỡ bỏ các tác vụ tự động cập nhật
 4. Tối ưu hóa cấu hình Registry
+5. Tạo shortcut Cốc Cốc Desktop, Start Menu (mặc định tắt SplitView và SidePanel)
 .NOTES
     Requires: Administrator privileges
     Version:  1.0
@@ -148,6 +149,94 @@ try {
 }
 catch {
     Write-Host "Không tải được file registry: $_" -ForegroundColor Yellow
+}
+
+# ---------- BƯỚC 5: TẠO SHORTCUT ----------
+Write-Host "[6/6] Đang tạo shortcut..." -ForegroundColor Cyan
+
+# Xóa các shortcut Cốc Cốc cũ trước
+$desktopPath = [Environment]::GetFolderPath("Desktop")
+$publicDesktopPath = [Environment]::GetFolderPath("CommonDesktopDirectory")
+$startMenuPath = [Environment]::GetFolderPath("CommonPrograms")
+
+$oldShortcuts = @(
+    "$desktopPath\Cốc Cốc.lnk",
+    "$desktopPath\CocCoc.lnk", 
+    "$publicDesktopPath\Cốc Cốc.lnk",
+    "$publicDesktopPath\CocCoc.lnk",
+    "$startMenuPath\Cốc Cốc.lnk",
+    "$startMenuPath\CocCoc.lnk"
+)
+
+foreach ($oldShortcut in $oldShortcuts) {
+    if (Test-Path $oldShortcut) {
+        Remove-Item $oldShortcut -Force -ErrorAction SilentlyContinue
+        Write-Host "✓ Đã xóa shortcut cũ: $oldShortcut" -ForegroundColor Yellow
+    }
+}
+
+# Đường dẫn browser.exe
+$browserPath = "${env:ProgramFiles}\CocCoc\Browser\Application\browser.exe"
+if (-not (Test-Path $browserPath)) {
+    $browserPath = "${env:ProgramFiles(x86)}\CocCoc\Browser\Application\browser.exe"
+}
+
+# Tạo shortcut cho Desktop
+$tempDesktopShortcut = Join-Path $desktopPath "CocCoc_Temp.lnk"
+$finalDesktopShortcut = Join-Path $desktopPath "Cốc Cốc.lnk"
+
+# Tạo shortcut cho Start Menu
+$tempStartMenuShortcut = Join-Path $startMenuPath "CocCoc_Temp.lnk"
+$finalStartMenuShortcut = Join-Path $startMenuPath "Cốc Cốc.lnk"
+
+try {
+    $WshShell = New-Object -ComObject WScript.Shell
+    
+    # Tạo shortcut Desktop
+    Write-Host "Đang tạo shortcut Desktop..." -ForegroundColor Gray
+    $DesktopShortcut = $WshShell.CreateShortcut($tempDesktopShortcut)
+    $DesktopShortcut.TargetPath = "`"$browserPath`""
+    $DesktopShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel"
+    $DesktopShortcut.IconLocation = "$browserPath, 0"
+    $DesktopShortcut.Save()
+    
+    # Đổi tên Desktop shortcut
+    Rename-Item -Path $tempDesktopShortcut -NewName "Cốc Cốc.lnk" -Force
+    
+    if (Test-Path $finalDesktopShortcut) {
+        Write-Host "✓ Đã tạo Desktop shortcut: $finalDesktopShortcut" -ForegroundColor Green
+    }
+    
+    # Tạo shortcut Start Menu
+    Write-Host "Đang tạo shortcut Start Menu..." -ForegroundColor Gray
+    $StartMenuShortcut = $WshShell.CreateShortcut($tempStartMenuShortcut)
+    $StartMenuShortcut.TargetPath = "`"$browserPath`""
+    $StartMenuShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel"
+    $StartMenuShortcut.IconLocation = "$browserPath, 0"
+    $StartMenuShortcut.Save()
+    
+    # Đổi tên Start Menu shortcut
+    Rename-Item -Path $tempStartMenuShortcut -NewName "Cốc Cốc.lnk" -Force
+    
+    if (Test-Path $finalStartMenuShortcut) {
+        Write-Host "✓ Đã tạo Start Menu shortcut: $finalStartMenuShortcut" -ForegroundColor Green
+    }
+}
+catch {
+    Write-Host "!! Lỗi: $($_.Exception.Message)" -ForegroundColor Red
+}
+finally {
+    # Dọn dẹp COM Object
+    if ($WshShell) {
+        [System.Runtime.Interopservices.Marshal]::ReleaseComObject($WshShell) | Out-Null
+    }
+    # Dọn dẹp file temp nếu còn sót
+    if (Test-Path $tempDesktopShortcut) {
+        Remove-Item $tempDesktopShortcut -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path $tempStartMenuShortcut) {
+        Remove-Item $tempStartMenuShortcut -Force -ErrorAction SilentlyContinue
+    }
 }
 
 # Dọn dẹp
