@@ -12,6 +12,10 @@
     Version:  1.1
 #>
 
+# Fix encoding issues
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+chcp 65001 | Out-Null
+
 # Kiểm tra Admin
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "Yêu cầu quyền Administrator!" -ForegroundColor Red
@@ -196,7 +200,7 @@ try {
     Write-Host "Đang tạo shortcut Desktop..." -ForegroundColor Gray
     $DesktopShortcut = $WshShell.CreateShortcut($tempDesktopShortcut)
     $DesktopShortcut.TargetPath = "`"$browserPath`""
-    $DesktopShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel"
+    $DesktopShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $DesktopShortcut.IconLocation = "$browserPath, 0"
     $DesktopShortcut.Save()
     
@@ -211,7 +215,7 @@ try {
     Write-Host "Đang tạo shortcut Start Menu..." -ForegroundColor Gray
     $StartMenuShortcut = $WshShell.CreateShortcut($tempStartMenuShortcut)
     $StartMenuShortcut.TargetPath = "`"$browserPath`""
-    $StartMenuShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel"
+    $StartMenuShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $StartMenuShortcut.IconLocation = "$browserPath, 0"
     $StartMenuShortcut.Save()
     
