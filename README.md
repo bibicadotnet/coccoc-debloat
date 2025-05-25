@@ -42,3 +42,5 @@ coccoc://flags/#coccoc-side-panel
 ```
 irm https://go.bibica.net/coccoc-profile | iex
 ```
+Hoặc tạo 1 shortcut Cốc Cốc, thêm vào Target `--user-data-dir="C:\Private\coccoc_lamviec"` 
+- `C:\Private\coccoc_lamviec` đường dẫn nơi chứa profile
