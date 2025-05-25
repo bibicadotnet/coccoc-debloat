@@ -9,7 +9,7 @@
 5. Tạo shortcut Cốc Cốc Desktop, Start Menu (mặc định tắt SplitView và SidePanel)
 .NOTES
     Requires: Administrator privileges
-    Version:  1.0
+    Version:  1.1
 #>
 
 # Kiểm tra Admin
@@ -18,7 +18,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit 1
 }
 
-Write-Host "`nCốc Cốc Browser Silent Installer v1.0" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc Browser Silent Installer v1.1" -BackgroundColor DarkGreen
 
 # ---------- PHẦN CÀI ĐẶT ----------
 $setupPath = "$env:TEMP\coccoc_setup.exe"
