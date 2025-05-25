@@ -92,11 +92,14 @@ Windows Registry Editor Version 5.00
 ; Hiển thị đầy đủ URL trên thanh địa chỉ
 "ShowFullUrlsInAddressBar"=dword:00000001
 
-; Tắt định vị ở mọi trang (hiển thị khi truy cập trang)
+; Chặn định vị ở mọi trang (hiển thị khi truy cập trang)
 "DefaultGeolocationSetting"=dword:00000002
 
-; Tắt thông báo ở mọi trang (hiển thị khi truy cập trang)
+; Chặn thông báo ở mọi trang (hiển thị khi truy cập trang)
 "DefaultNotificationsSetting"=dword:00000002
+
+; Chặn các trang truy cập cảm biến chuyển động (motion sensors)
+"DefaultSensorsSetting"=dword:00000002  
 
 ; Bật Block third-party cookies
 "BlockThirdPartyCookies"=dword:00000001
