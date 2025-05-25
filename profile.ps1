@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Tạo profile mới cho trình duyệt Cốc Cốc (mặc định tắt SplitView và SidePanel)
 .DESCRIPTION
