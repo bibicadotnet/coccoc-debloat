@@ -31,3 +31,9 @@ coccoc://flags/#coccoc-side-panel
 - Mở `coccoc-debloat.reg` bật/tắt các tính năng, bằng cách thêm `;` đằng trước (hoặc xóa nội dung đó đi)
 - Chạy `coccoc-restore.reg` để xóa toàn bộ cấu hình cũ
 - Chạy lại `coccoc-debloat.reg` để áp dụng cấu hình mới
+
+### Tạo nhanh profile
+- Chạy `PowerShell` với quyền `Administrator` để tạo nhanh profile mới cho trình duyệt Cốc Cốc (hỗ trợ tùy chọn nơi chứa profile)
+```
+irm https://go.bibica.net/coccoc-profile | iex
+```
