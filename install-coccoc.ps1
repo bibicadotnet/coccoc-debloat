@@ -9,7 +9,7 @@
 5. Tạo shortcut Cốc Cốc Desktop, Start Menu (mặc định tắt SplitView và SidePanel)
 .NOTES
     Requires: Administrator privileges
-    Version:  1.1
+    Version:  1.1.1
 #>
 
 # Fix encoding issues
