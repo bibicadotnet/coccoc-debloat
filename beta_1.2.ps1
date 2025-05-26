@@ -2,11 +2,11 @@
 .SYNOPSIS
     Cốc Cốc Browser Silent Installer - Makes the Cốc Cốc interface as clean as the original Chromium
 .DESCRIPTION
-- Automatically downloads from the official source
-- Installation without user interaction (silent install)
-- Removes automatic update tasks and supports manual updates
-- Optimizes Registry settings
-- Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
+    - Automatically downloads from the official source
+    - Installation without user interaction (silent install)
+    - Removes automatic update tasks and supports manual updates
+    - Optimizes Registry settings
+    - Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
     Version: 1.2
@@ -21,6 +21,8 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Write-Host "This script requires Administrator rights. Please run PowerShell as Administrator." -ForegroundColor Red
     exit
 }
+
+Write-Host "`nCốc Cốc Browser Silent Installer v1.2" -BackgroundColor DarkGreen
 
 # Function to perform operation with retry logic
 function Invoke-WithRetry {
