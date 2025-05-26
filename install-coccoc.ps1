@@ -296,6 +296,7 @@ catch {
     Write-Host "Error applying debloat registry tweaks after retries: $_" -ForegroundColor Red
 }
 
+
 # 6. Creating shortcut with new arguments
 Write-Host "`nCreating new shortcut..." -ForegroundColor Cyan
 
@@ -343,17 +344,16 @@ try {
     $DesktopShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $DesktopShortcut.IconLocation = "$browserPath, 0"
     $DesktopShortcut.Save()
-    
+
     # Rename Desktop shortcut
     Rename-Item -Path $tempDesktopShortcut -NewName "Cốc Cốc.lnk" -Force
-    
-    # Set Desktop shortcut to read-only
-    Set-ItemProperty -Path $finalDesktopShortcut -Name IsReadOnly -Value $true
-    
+    Start-Sleep -Milliseconds 200
+    cmd.exe /c "attrib +R `"$finalDesktopShortcut`""
+
     if (Test-Path $finalDesktopShortcut) {
         Write-Host "[SUCCESS] Created Desktop shortcut: $finalDesktopShortcut (Read-only)" -ForegroundColor Green
     }
-    
+
     # Create Start Menu shortcut
     Write-Host "Creating Start Menu shortcut..." -ForegroundColor Gray
     $StartMenuShortcut = $WshShell.CreateShortcut($tempStartMenuShortcut)
@@ -361,16 +361,19 @@ try {
     $StartMenuShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $StartMenuShortcut.IconLocation = "$browserPath, 0"
     $StartMenuShortcut.Save()
-    
+
     # Rename Start Menu shortcut
     Rename-Item -Path $tempStartMenuShortcut -NewName "Cốc Cốc.lnk" -Force
-    
-    # Set Start Menu shortcut to read-only
-    Set-ItemProperty -Path $finalStartMenuShortcut -Name IsReadOnly -Value $true
-    
+    Start-Sleep -Milliseconds 200
+    cmd.exe /c "attrib +R `"$finalStartMenuShortcut`""
+
     if (Test-Path $finalStartMenuShortcut) {
         Write-Host "[SUCCESS] Created Start Menu shortcut: $finalStartMenuShortcut (Read-only)" -ForegroundColor Green
     }
+
+    # Refresh desktop to show shortcut immediately
+    $shellApp = New-Object -ComObject Shell.Application
+    $shellApp.NameSpace(0).Self.InvokeVerb("Refresh")
 }
 catch {
     Write-Host "[ERROR] Failed to create shortcut: $($_.Exception.Message)" -ForegroundColor Red
