@@ -1,15 +1,15 @@
 <#
 .SYNOPSIS
-    Cốc Cốc Browser Silent Installer - Giúp giao diện Cốc Cốc sạch như nguyên bản Chromium
+    Cốc Cốc Browser Silent Installer - Makes the Cốc Cốc interface as clean as the original Chromium
 .DESCRIPTION
-1. Tự động tải xuống từ nguồn chính thức
-2. Cài đặt không cần tương tác (silent install)
-3. Gỡ bỏ các tác vụ tự động cập nhật
-4. Tối ưu hóa cấu hình Registry
-5. Tạo shortcut Cốc Cốc Desktop, Start Menu (mặc định tắt SplitView và SidePanel)
+- Automatically downloads from the official source
+- Installation without user interaction (silent install)
+- Removes automatic update tasks and supports manual updates
+- Optimizes Registry settings
+- Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
-    Version:  1.1.1
+    Version: 1.2
 #>
 
 # Fix encoding issues
