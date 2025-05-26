@@ -215,6 +215,10 @@ foreach ($file in (Get-Item $crashHandlerFiles -ErrorAction SilentlyContinue | W
         $disabledPath = $file.FullName + ".disabled"
         Rename-Item -Path $file.FullName -NewName $disabledPath -Force
 
+        # 3. Create lock file (ReadOnly + Hidden + System)
+        New-Item -Path $file.FullName -ItemType File -Force | Out-Null
+        (Get-Item $file.FullName).Attributes = "ReadOnly, Hidden, System"
+
         Write-Host "[SUCCESS] Disabled: $($file.Name)" -ForegroundColor Green
     }
     catch {
