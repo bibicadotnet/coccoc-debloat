@@ -389,6 +389,6 @@ Remove-Item -Path $CocCocInstaller -ErrorAction SilentlyContinue
 Remove-Item -Path $RestoreRegFile -ErrorAction SilentlyContinue
 Remove-Item -Path $DebloatRegFile -ErrorAction SilentlyContinue
 
-Write-Host "`nCoc Coc clean installation completed!" -ForegroundColor Green
+Write-Host "`nCoc Coc clean installation completed!" -BackgroundColor DarkGreen
 Write-Host "Manual updates from Settings -> About Cốc Cốc will work, but automatic updates are completely disabled." -ForegroundColor Yellow
 Write-Host "Recommendation: Restart your computer to apply all changes." -ForegroundColor Yellow
