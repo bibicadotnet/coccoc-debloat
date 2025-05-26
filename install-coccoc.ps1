@@ -2,11 +2,11 @@
 .SYNOPSIS
     Cốc Cốc Browser Silent Installer - Makes the Cốc Cốc interface as clean as the original Chromium
 .DESCRIPTION
-- Automatically downloads from the official source
-- Installation without user interaction (silent install)
-- Removes automatic update tasks and supports manual updates
-- Optimizes Registry settings
-- Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
+    - Automatically downloads from the official source
+    - Installation without user interaction (silent install)
+    - Removes automatic update tasks and supports manual updates
+    - Optimizes Registry settings
+    - Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
     Version: 1.2
@@ -16,19 +16,90 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 | Out-Null
 
-# Kiểm tra Admin
-if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Host "Yêu cầu quyền Administrator!" -ForegroundColor Red
-    exit 1
+# Require Administrator privileges
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "This script requires Administrator rights. Please run PowerShell as Administrator." -ForegroundColor Red
+    exit
 }
 
-Write-Host "`nCốc Cốc Browser Silent Installer v1.1.1" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc Browser Silent Installer v1.2" -BackgroundColor DarkGreen
 
-# ---------- PHẦN CÀI ĐẶT ----------
-$setupPath = "$env:TEMP\coccoc_setup.exe"
+# Function to perform operation with retry logic
+function Invoke-WithRetry {
+    param (
+        [ScriptBlock]$ScriptBlock,
+        [string]$OperationName,
+        [int]$MaxRetries = 3,
+        [int]$RetryDelay = 5
+    )
+    
+    $attempt = 1
+    $lastError = $null
+    
+    while ($attempt -le $MaxRetries) {
+        try {
+            Write-Host "[Attempt $attempt/$MaxRetries] $OperationName" -ForegroundColor Cyan
+            $result = & $ScriptBlock
+            return $result
+        }
+        catch {
+            $lastError = $_
+            Write-Host "Attempt $attempt failed: $_" -ForegroundColor Yellow
+            $attempt++
+            
+            if ($attempt -le $MaxRetries) {
+                Write-Host "Retrying in $RetryDelay seconds..." -ForegroundColor Yellow
+                Start-Sleep -Seconds $RetryDelay
+            }
+        }
+    }
+    
+    Write-Host "Operation failed after $MaxRetries attempts." -ForegroundColor Red
+    Write-Host "Last error details: $lastError" -ForegroundColor Red
+    throw $lastError
+}
 
-# 1. Dọn dẹp toàn bộ trước khi cài
-Write-Host "`n[1/4] Đang dọn dẹp bản cài cũ..."
+# Force terminate all CocCoc processes without prompts
+function Stop-CocCocProcesses {
+    Write-Host "`nTerminating all CocCoc processes..." -ForegroundColor Cyan
+    
+    # List all CocCoc-related process names
+    $targetProcesses = @(
+        "browser",          # Main browser process
+        "CocCocUpdate",     # Updater
+        "CocCocCrashHandler", # Crash reporter
+        "CocCocCrashHandler64" # 64-bit crash reporter
+    )
+
+    # Kill all instances immediately
+    foreach ($proc in $targetProcesses) {
+        try {
+            Get-Process -Name $proc -ErrorAction SilentlyContinue | 
+            Stop-Process -Force -ErrorAction SilentlyContinue
+        }
+        catch { 
+            # Silent fail - we don't care if process wasn't running
+        }
+    }
+
+    # Double-tap to ensure everything is dead
+    Start-Sleep -Milliseconds 500
+    foreach ($proc in $targetProcesses) {
+        try {
+            Get-Process -Name $proc -ErrorAction SilentlyContinue | 
+            Stop-Process -Force -ErrorAction SilentlyContinue
+        }
+        catch { }
+    }
+
+    Write-Host "All CocCoc processes terminated." -ForegroundColor Green
+}
+
+# Execute immediately
+Stop-CocCocProcesses
+
+# 1. Download and install Coc Coc silently with retry
+Write-Host "`nCleaning up old installation..." -ForegroundColor Cyan
 $cocPaths = @(
     "${env:ProgramFiles}\CocCoc",
     "${env:ProgramFiles(x86)}\CocCoc"
@@ -41,124 +112,191 @@ foreach ($path in $cocPaths) {
             Takeown /F $path /R /A /D Y 2>&1 | Out-Null
             Icacls $path /grant:r "Administrators:F" /T /C 2>&1 | Out-Null
             Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
-            Write-Host "✓ Đã dọn dẹp: $path" -ForegroundColor Green
+            Write-Host "Cleaned up: $path" -ForegroundColor Green
         } catch {
-            Write-Host "! Không thể xóa: $path" -ForegroundColor Yellow
+            Write-Host "Could not delete: $path" -ForegroundColor Yellow
         }
     }
 }
 
-# 2. Tải file mới
-Write-Host "[2/4] Đang tải bộ cài mới..."
+Write-Host "`nStarting Coc Coc download and installation..." -ForegroundColor Cyan
+$CocCocInstaller = "$env:TEMP\coccoc_en_machine.exe"
+
 try {
-    (New-Object Net.WebClient).DownloadFile('https://files2.coccoc.com/browser/x64/coccoc_en_machine.exe', $setupPath)
-    Write-Host "✓ Tải thành công" -ForegroundColor Green
-} catch {
-    Write-Host "✗ Lỗi tải file: $_" -ForegroundColor Red
-    exit 1
-}
-
-# 3. Cài đặt
-Write-Host "[3/4] Đang cài đặt..."
-try {
-    $process = Start-Process -FilePath $setupPath -ArgumentList "/silent /install" -PassThru -Wait
-    if ($process.ExitCode -ne 0) { throw "Mã lỗi: $($process.ExitCode)" }
-    Write-Host "✓ Cài đặt hoàn tất" -ForegroundColor Green
-} catch {
-    Write-Host "✗ Lỗi cài đặt: $_" -ForegroundColor Red
-    exit 1
-}
-
-# 4. Dọn dẹp file tạm
-Write-Host "[4/4] Đang hoàn tất..."
-Remove-Item $setupPath -Force -ErrorAction SilentlyContinue
-
-# Bước 3: xóa task tự động update
-Write-Host "[3/5] Xóa task tự động update..."
-$tasksToRemove = @(
-    "CocCocUpdateTaskMachineCore",
-    "CocCocUpdateTaskMachineUA",
-    "CocCoc*"
-)
-
-foreach ($task in $tasksToRemove) {
-    try {
-        schtasks /Delete /TN $task /F 2>$null
-        Write-Host "Đã xóa task: $task" -ForegroundColor Cyan
+    # Download Coc Coc installer with retry
+    Invoke-WithRetry -OperationName "Downloading Coc Coc installer" -ScriptBlock {
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri "https://files2.coccoc.com/browser/x64/coccoc_en_machine.exe" -OutFile $CocCocInstaller -UseBasicParsing
     }
-    catch {
-        Write-Host "Không tìm thấy task $task để xóa" -ForegroundColor Yellow
+    
+    # Install Coc Coc with retry
+    $installProcess = Invoke-WithRetry -OperationName "Installing Coc Coc" -ScriptBlock {
+        $process = Start-Process -FilePath $CocCocInstaller -ArgumentList "/silent /install" -PassThru -Wait
+        return $process
+    }
+    
+    if ($installProcess.ExitCode -eq 0) {
+        Write-Host "Coc Coc installed successfully." -ForegroundColor Green
+    } else {
+        Write-Host "Coc Coc installation completed with exit code $($installProcess.ExitCode)" -ForegroundColor Yellow
     }
 }
-
-# Bước 4: xóa và phân quyền lại CocCocUpdate CocCocCrashHandler CocCocCrashHandler64
-# Yêu cầu quyền Admin
-if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+catch {
+    Write-Host "Fatal error during Coc Coc installation: $_" -ForegroundColor Red
     exit
 }
 
-Write-Host "Đang xử lý CocCocUpdate và CocCocCrashHandler ..." -ForegroundColor Cyan
+# 2. Configure Coc Coc Update policies
+Write-Host "`nConfiguring Coc Coc Update policies..." -ForegroundColor Cyan
 
-# Danh sách file cần xử lý (tự động phát hiện cả 32-bit và 64-bit)
-$targetFiles = @(
-    # CrashHandlers trong thư mục version (vd: 2.9.3.21)
-    "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler.exe",
-    "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler64.exe",
-    "${env:ProgramFiles(x86)}\CocCoc\Update\*\CocCocCrashHandler.exe",
-    "${env:ProgramFiles(x86)}\CocCoc\Update\*\CocCocCrashHandler64.exe",
-    
-    # File update chính
-    "${env:ProgramFiles}\CocCoc\Update\CocCocUpdate.exe",
-    "${env:ProgramFiles(x86)}\CocCoc\Update\CocCocUpdate.exe"
-)
-
-foreach ($file in (Get-Item $targetFiles -ErrorAction SilentlyContinue)) {
-    try {
-        # 1. Dừng tiến trình đang chạy
-        $processName = $file.BaseName
-        Stop-Process -Name $processName -Force -ErrorAction SilentlyContinue
-
-        # 2. Chiếm quyền và xóa
-        Takeown /F $file.FullName /A 2>&1 | Out-Null
-        Icacls $file.FullName /grant:r "Administrators:F" 2>&1 | Out-Null
-        Remove-Item $file.FullName -Force
-
-        # 3. Tạo file khóa (ReadOnly + Hidden + System)
-        New-Item -Path $file.FullName -ItemType File -Force | Out-Null
-        (Get-Item $file.FullName).Attributes = "ReadOnly, Hidden, System"
-        
-        Write-Host "[✓] Đã xử lý: $($file.FullName)" -ForegroundColor Green
-    }
-    catch {
-        Write-Host "[!] Lỗi $($file.FullName): $($_.Exception.Message)" -ForegroundColor Red
-    }
+# Create registry keys if they don't exist
+$CocCocUpdateRegPath = "HKLM:\SOFTWARE\Policies\CocCoc\CocCocUpdate"
+if (-not (Test-Path $CocCocUpdateRegPath)) {
+    New-Item -Path $CocCocUpdateRegPath -Force | Out-Null
 }
 
-Write-Host "`Đã xử lý xong CocCocUpdate và CocCocCrashHandler" 
+# Set registry values to disable auto-updates but allow manual updates
+$updateSettings = @{
+    "AutoUpdateCheckPeriodMinutes" = 0
+    "UpdateDefault" = 0
+    "DisableAutoUpdateChecksCheckboxValue" = 1
+    "InstallDefault" = 0
+    "AllowManualUpdateCheck" = 1  # This enables manual updates from Settings
+}
 
-# Bước 4: Áp dụng registry optimizations
-$regPath = "$env:TEMP\coccoc-debloat.reg"
-Write-Host "[5/5] Áp dụng registry optimizations..."
+foreach ($key in $updateSettings.Keys) {
+    Set-ItemProperty -Path $CocCocUpdateRegPath -Name $key -Value $updateSettings[$key] -Type DWord
+}
+
+# 3. Completely stop and disable CocCocUpdate CocCocCrashHandler processes
+Write-Host "`nStopping all CocCocUpdate CocCocCrashHandler processes..." -ForegroundColor Cyan
 try {
-    if (-not (Test-Path "$env:TEMP")) { New-Item -Path "$env:TEMP" -ItemType Directory -Force }
-
-    (New-Object Net.WebClient).DownloadFile(
-        'https://raw.githubusercontent.com/bibicadotnet/coccoc-debloat/main/coccoc-debloat.reg',
-        $regPath
-    )
+    $processNames = @("CocCocUpdate*", "CocCocCrashHandler", "CocCocCrashHandler64")
     
-    Start-Process "regedit.exe" -ArgumentList "/s `"$regPath`"" -Wait
-    Write-Host "Đã áp dụng registry tweaks" -ForegroundColor Green
+    foreach ($name in $processNames) {
+        try {
+            $processes = Get-Process -Name $name -ErrorAction Stop
+            if ($processes) {
+                $processes | Stop-Process -Force
+                Write-Host "[SUCCESS] Stopped all $name processes" -ForegroundColor Green
+            }
+        }
+        catch [Microsoft.PowerShell.Commands.ProcessCommandException] {
+            Write-Host "[INFO] No $name processes found" -ForegroundColor Cyan
+        }
+        catch {
+            Write-Host "[ERROR] Failed to stop $name processes: $_" -ForegroundColor Red
+        }
+    }
 }
 catch {
-    Write-Host "Không tải được file registry: $_" -ForegroundColor Yellow
+    Write-Host "[CRITICAL] General error in process termination: $_" -ForegroundColor Red
+    Write-Host "[DEBUG] Try running as Administrator" -ForegroundColor Yellow
 }
 
-# ---------- BƯỚC 5: TẠO SHORTCUT ----------
-Write-Host "[6/6] Đang tạo shortcut..." -ForegroundColor Cyan
+# 4. Disable CocCocCrashHandler processes
+Write-Host "`nDisabling CocCocCrashHandler components..." -ForegroundColor Cyan
 
-# Xóa các shortcut Cốc Cốc cũ trước
+# Target all CrashHandler variants (both 32-bit and 64-bit)
+$crashHandlerFiles = @(
+    "${env:ProgramFiles}\CocCoc\Application\*\CocCocCrashHandler.exe",
+    "${env:ProgramFiles}\CocCoc\Application\*\CocCocCrashHandler64.exe", 
+    "${env:ProgramFiles(x86)}\CocCoc\Application\*\CocCocCrashHandler.exe",
+    "${env:ProgramFiles(x86)}\CocCoc\Application\*\CocCocCrashHandler64.exe"
+)
+
+foreach ($file in (Get-Item $crashHandlerFiles -ErrorAction SilentlyContinue | Where-Object { $_.Exists })) {
+    try {
+        # 1. Stop any running instances
+        $processName = $file.BaseName
+        Get-Process -Name $processName -ErrorAction SilentlyContinue | Stop-Process -Force
+
+        # 2. Disable by renaming executable
+        $disabledPath = $file.FullName + ".disabled"
+        Rename-Item -Path $file.FullName -NewName $disabledPath -Force
+
+        Write-Host "[SUCCESS] Disabled: $($file.Name)" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "[ERROR] Failed to disable $($file.Name): $_" -ForegroundColor Red
+    }
+}
+
+Write-Host "CocCocCrashHandler components disabled" -ForegroundColor Cyan
+
+# 5. Remove scheduled update tasks with retry
+Write-Host "`nRemoving Coc Coc scheduled tasks..." -ForegroundColor Cyan
+
+$TasksToRemove = @("CocCoc*")
+
+foreach ($taskName in $TasksToRemove) {
+    try {
+        Invoke-WithRetry -OperationName "Removing task $taskName" -ScriptBlock {
+            $task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+            if ($task) {
+                # Disable task first if enabled
+                if ($task.State -ne "Disabled") {
+                    $task | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
+                }
+                # Delete the task
+                $task | Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+                Write-Host "Removed task: $taskName" -ForegroundColor Green
+            }
+        }
+    }
+    catch {
+        Write-Host "Failed to remove task ${taskName} after retries: $_" -ForegroundColor Red
+    }
+}
+
+# 6. Apply additional registry tweaks with retry
+Write-Host "`nApplying additional registry tweaks..." -ForegroundColor Cyan
+
+# First, apply restore registry
+$RestoreRegFileUrl = "https://raw.githubusercontent.com/bibicadotnet/coccoc-debloat/refs/heads/main/coccoc-restore.reg"
+$RestoreRegFile = "$env:TEMP\coccoc_restore.reg"
+
+try {
+    Write-Host "Downloading and applying coccoc-restore.reg..." -ForegroundColor Cyan
+    Invoke-WithRetry -OperationName "Downloading restore registry file" -ScriptBlock {
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri $RestoreRegFileUrl -OutFile $RestoreRegFile -UseBasicParsing
+    }
+    
+    Invoke-WithRetry -OperationName "Applying restore registry tweaks" -ScriptBlock {
+        Start-Process "regedit.exe" -ArgumentList "/s `"$RestoreRegFile`"" -Wait -NoNewWindow
+    }
+    
+    Write-Host "Restore registry tweaks applied successfully." -ForegroundColor Green
+}
+catch {
+    Write-Host "Error applying restore registry tweaks: $_" -ForegroundColor Red
+}
+
+# Then apply the debloat registry settings
+$DebloatRegFileUrl = "https://raw.githubusercontent.com/bibicadotnet/coccoc-debloat/refs/heads/main/coccoc-debloat.reg"
+$DebloatRegFile = "$env:TEMP\coccoc_debloat.reg"
+
+try {
+    Invoke-WithRetry -OperationName "Downloading debloat registry tweaks" -ScriptBlock {
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri $DebloatRegFileUrl -OutFile $DebloatRegFile -UseBasicParsing
+    }
+    
+    Invoke-WithRetry -OperationName "Applying debloat registry tweaks" -ScriptBlock {
+        Start-Process "regedit.exe" -ArgumentList "/s `"$DebloatRegFile`"" -Wait -NoNewWindow
+    }
+    
+    Write-Host "Debloat registry tweaks applied successfully." -ForegroundColor Green
+}
+catch {
+    Write-Host "Error applying debloat registry tweaks after retries: $_" -ForegroundColor Red
+}
+
+# 7. Creating shortcut with new arguments
+Write-Host "`nCreating new shortcut..." -ForegroundColor Cyan
+
+# Remove old Cốc Cốc shortcuts
 $desktopPath = [Environment]::GetFolderPath("Desktop")
 $publicDesktopPath = [Environment]::GetFolderPath("CommonDesktopDirectory")
 $startMenuPath = [Environment]::GetFolderPath("CommonPrograms")
@@ -175,66 +313,72 @@ $oldShortcuts = @(
 foreach ($oldShortcut in $oldShortcuts) {
     if (Test-Path $oldShortcut) {
         Remove-Item $oldShortcut -Force -ErrorAction SilentlyContinue
-        Write-Host "✓ Đã xóa shortcut cũ: $oldShortcut" -ForegroundColor Yellow
+        Write-Host "[SUCCESS] Removed old shortcut: $oldShortcut" -ForegroundColor Yellow
     }
 }
 
-# Đường dẫn browser.exe
+# Find browser.exe path
 $browserPath = "${env:ProgramFiles}\CocCoc\Browser\Application\browser.exe"
 if (-not (Test-Path $browserPath)) {
     $browserPath = "${env:ProgramFiles(x86)}\CocCoc\Browser\Application\browser.exe"
 }
 
-# Tạo shortcut cho Desktop
+# Shortcut paths
 $tempDesktopShortcut = Join-Path $desktopPath "CocCoc_Temp.lnk"
 $finalDesktopShortcut = Join-Path $desktopPath "Cốc Cốc.lnk"
 
-# Tạo shortcut cho Start Menu
 $tempStartMenuShortcut = Join-Path $startMenuPath "CocCoc_Temp.lnk"
 $finalStartMenuShortcut = Join-Path $startMenuPath "Cốc Cốc.lnk"
 
 try {
     $WshShell = New-Object -ComObject WScript.Shell
     
-    # Tạo shortcut Desktop
-    Write-Host "Đang tạo shortcut Desktop..." -ForegroundColor Gray
+    # Create Desktop shortcut
+    Write-Host "Creating Desktop shortcut..." -ForegroundColor Gray
     $DesktopShortcut = $WshShell.CreateShortcut($tempDesktopShortcut)
-    $DesktopShortcut.TargetPath = "`"$browserPath`""
+    $DesktopShortcut.TargetPath = "$browserPath"
     $DesktopShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $DesktopShortcut.IconLocation = "$browserPath, 0"
     $DesktopShortcut.Save()
     
-    # Đổi tên Desktop shortcut
+    # Rename Desktop shortcut
     Rename-Item -Path $tempDesktopShortcut -NewName "Cốc Cốc.lnk" -Force
     
+    # Set Desktop shortcut to read-only
+    Set-ItemProperty -Path $finalDesktopShortcut -Name IsReadOnly -Value $true
+    
     if (Test-Path $finalDesktopShortcut) {
-        Write-Host "✓ Đã tạo Desktop shortcut: $finalDesktopShortcut" -ForegroundColor Green
+        Write-Host "[SUCCESS] Created Desktop shortcut: $finalDesktopShortcut (Read-only)" -ForegroundColor Green
     }
     
-    # Tạo shortcut Start Menu
-    Write-Host "Đang tạo shortcut Start Menu..." -ForegroundColor Gray
+    # Create Start Menu shortcut
+    Write-Host "Creating Start Menu shortcut..." -ForegroundColor Gray
     $StartMenuShortcut = $WshShell.CreateShortcut($tempStartMenuShortcut)
-    $StartMenuShortcut.TargetPath = "`"$browserPath`""
+    $StartMenuShortcut.TargetPath = "$browserPath"
     $StartMenuShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $StartMenuShortcut.IconLocation = "$browserPath, 0"
     $StartMenuShortcut.Save()
     
-    # Đổi tên Start Menu shortcut
+    # Rename Start Menu shortcut
     Rename-Item -Path $tempStartMenuShortcut -NewName "Cốc Cốc.lnk" -Force
     
+    # Set Start Menu shortcut to read-only
+    Set-ItemProperty -Path $finalStartMenuShortcut -Name IsReadOnly -Value $true
+    
     if (Test-Path $finalStartMenuShortcut) {
-        Write-Host "✓ Đã tạo Start Menu shortcut: $finalStartMenuShortcut" -ForegroundColor Green
+        Write-Host "[SUCCESS] Created Start Menu shortcut: $finalStartMenuShortcut (Read-only)" -ForegroundColor Green
     }
 }
 catch {
-    Write-Host "!! Lỗi: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "[ERROR] Failed to create shortcut: $($_.Exception.Message)" -ForegroundColor Red
 }
 finally {
-    # Dọn dẹp COM Object
+    # Release COM object
     if ($WshShell) {
         [System.Runtime.Interopservices.Marshal]::ReleaseComObject($WshShell) | Out-Null
     }
-    # Dọn dẹp file temp nếu còn sót
+
+    # Clean up temporary files
     if (Test-Path $tempDesktopShortcut) {
         Remove-Item $tempDesktopShortcut -Force -ErrorAction SilentlyContinue
     }
@@ -243,15 +387,12 @@ finally {
     }
 }
 
-# Dọn dẹp
-Remove-Item $setupPath, $regPath -ErrorAction SilentlyContinue
+# Cleanup temporary files
+Remove-Item -Path $CocCocInstaller -ErrorAction SilentlyContinue
+Remove-Item -Path $RestoreRegFile -ErrorAction SilentlyContinue
+Remove-Item -Path $DebloatRegFile -ErrorAction SilentlyContinue
 
-Write-Host "`nHOÀN TẤT!" -BackgroundColor DarkGreen
-Write-Host "- Đã cài đặt Cốc Cốc"
-Write-Host "- Đã xóa tự động update"
-Write-Host "- Đã xóa CrashHandlers"
-Write-Host "- Đã áp dụng registry optimizations"
-Write-Host "`nTHÔNG BÁO: Để cập nhật Cốc Cốc khi cần, vui lòng:" -ForegroundColor Cyan -BackgroundColor DarkGreen
-Write-Host "1. Mở PowerShell với quyền Administrator" -ForegroundColor White
-Write-Host "2. Chạy lệnh sau: irm https://go.bibica.net/coccoc | iex" -ForegroundColor Yellow
-Write-Host "3. Chờ quá trình cài đặt hoàn tất" -ForegroundColor White
+Write-Host "`nCoc Coc clean installation completed!" -BackgroundColor DarkGreen
+
+Write-Host "`nManual updates from Settings -> About Cốc Cốc will work, but automatic updates are completely disabled." -ForegroundColor Yellow
+Write-Host "Recommendation: Restart your computer to apply all changes." -ForegroundColor Yellow
