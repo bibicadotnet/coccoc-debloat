@@ -1,6 +1,6 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc]
 
 ; Tắt Access Code Cast
 "AccessCodeCastEnabled"=dword:00000000
@@ -122,9 +122,9 @@ Windows Registry Editor Version 5.00
 ; Bật Use graphics acceleration when available
 "HardwareAccelerationModeEnabled"=dword:00000001
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc\ExtensionInstallBlocklist]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallBlocklist]
 "1"="gfgbmghkdjckppeomloefmbphdfmokgd"
 "2"="afaljjbleihmahhpckngondmgohleljb"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc\ExtensionInstallForcelist]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallForcelist]
 "1"="jaadjnlkjnhohljficgoddcjmndjfdmi"
