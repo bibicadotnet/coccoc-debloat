@@ -381,9 +381,6 @@ finally {
     }
 }
 
-
-
-
 # Cleanup temporary files
 Remove-Item -Path $CocCocInstaller -ErrorAction SilentlyContinue
 Remove-Item -Path $RestoreRegFile -ErrorAction SilentlyContinue
