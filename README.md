@@ -44,20 +44,15 @@ irm https://go.bibica.net/coccoc | iex
 
 ## 🔧 Tùy chỉnh nâng cao
 
-### 1. Tắt Split View và Side Panel qua shortcut
+### 1. Bật lại Split View và Side Panel qua shortcut
 
-👉 Click chuột phải vào shortcut → Chọn **Properties** → Tab **Shortcut** → Thêm đoạn sau vào ô **Target**:
+👉 Click chuột phải vào shortcut → Chọn **Properties** → Tab **Shortcut** → Xóa đoạn sau ở ô **Target**:
 
 ```text
 --disable-features=CocCocSplitView,SidePanel
 ```
 
-Ví dụ:
-```
-"C:\Program Files\CocCoc\Browser\Application\browser.exe" --disable-features=CocCocSplitView,SidePanel
-```
-
-> 🔁 Để bật lại, chỉ cần xóa dòng trên khỏi phần `Target`.
+> 🔁 Để tắt Split View và Side Panel lại, chỉ cần thêm dòng trên vào lại `Target`.
 
 ---
 
