@@ -1,9 +1,9 @@
 # Giao diện Cốc Cốc sạch như Chromium nguyên bản
 
 - Tắt các tiện ích mặc định (Từ Điển, Rủng Rỉnh)
-- Tắt side panel, split view
+- Tắt Side Panel, Split View
 - Thay thế trang newtab bằng một trang trắng sạch sẽ
-- Tắt mọi tiến trình chạy ngầm và cập nhật tự động.
+- Tắt mọi tiến trình chạy ngầm và cập nhật tự động (hỗ trợ cập nhập thủ công qua `coccoc://settings/help`)
 - Tắt gần như mọi thứ có thể gửi thông tin về Google hay Cốc Cốc
 - Thiết lập quyền riêng tư ở mức nghiêm ngặt: tắt cookie của bên thứ ba, tắt thông báo, tắt định vị, tắt cảm biến chuyển động
 - Sử dụng tự động DNS Cloudflare để tăng tốc và bảo vệ quyền riêng tư.
@@ -20,13 +20,13 @@ Shortcut Cốc Cốc chạy qua `--disable-features=CocCocSplitView,SidePanel` �
 
 Click phải vào shortcut Cốc Cốc -> Chọn Properties  -> Trong tab Shortcut -> sẽ thấy ô Target
 
-- Tắt/Bật split view thủ công
+- Tắt/Bật Split View thủ công
 
   Copy trực tiếp link bên dưới vào trình duyệt, chọn Disabled/Enabled
 ```
 coccoc://flags/#coccoc-split-view
 ```
-- Tắt/Bật side panel thủ công
+- Tắt/Bật Side Panel thủ công
 
 Copy trực tiếp link bên dưới vào trình duyệt, chọn Disabled/Enabled
 ```
