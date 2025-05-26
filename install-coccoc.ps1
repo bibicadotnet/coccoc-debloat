@@ -9,7 +9,7 @@
     - Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
-    Version: v1.2
+    Version: v1.2.1
 #>
 
 # Fix encoding issues
@@ -22,7 +22,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-Write-Host "`nCốc Cốc Browser Silent Installer v1.2" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc Browser Silent Installer v1.2.1" -BackgroundColor DarkGreen
 
 # Function to perform operation with retry logic
 function Invoke-WithRetry {
