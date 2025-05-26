@@ -115,3 +115,10 @@ Thêm vào cuối `Target` trong shortcut:
 > 📁 Đường dẫn `C:\Private\coccoc_lamviec` là nơi lưu trữ dữ liệu người dùng độc lập.
 
 ---
+### Đường dẫn pin shortcut profile
+```
+%AppData%\Microsoft\Internet Explorer\Quick Launch\User Pinned\ImplicitAppShortcuts
+```
+
+
+
