@@ -113,8 +113,8 @@ Windows Registry Editor Version 5.00
 ; Bật Memory Saver
 "HighEfficiencyModeEnabled"=dword:00000001
 
-; Bật Memory Saver -> Maximum memory savings
-"MemorySaverModeSavings"=dword:00000002
+; Bật Memory Saver -> Balanced memory savings
+"MemorySaverModeSavings"=dword:00000001
 
 ; Tắt Preload pages
 "NetworkPredictionOptions"=dword:00000002
