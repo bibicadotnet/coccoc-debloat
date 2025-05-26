@@ -17,6 +17,7 @@
 | Tab mới (New Tab) | ✅ Thay thế bằng trang sạch không quảng cáo |
 | `CocCocCrashHandler` (tiến trình nền) | ✅ Đã tắt |
 | `CocCocUpdate` (tự động cập nhật) | ✅ Đã tắt |
+| Cập nhập thủ công `coccoc://settings/help` | ✅ Hỗ trợ |
 | Gửi dữ liệu về máy chủ Google/Cốc Cốc | ✅ Hầu hết đã bị vô hiệu hóa |
 | Quyền riêng tư | ✅ Thiết lập ở mức cao:<br> - Tắt cookie bên thứ ba<br> - Tắt thông báo<br> - Tắt định vị & cảm biến chuyển động |
 | DNS mặc định | ✅ Sử dụng Cloudflare để tăng tốc và bảo mật |
