@@ -344,8 +344,11 @@ try {
     # Rename Desktop shortcut
     Rename-Item -Path $tempDesktopShortcut -NewName "Cốc Cốc.lnk" -Force
     
+    # Set Desktop shortcut to read-only
+    Set-ItemProperty -Path $finalDesktopShortcut -Name IsReadOnly -Value $true
+    
     if (Test-Path $finalDesktopShortcut) {
-        Write-Host "[SUCCESS] Created Desktop shortcut: $finalDesktopShortcut" -ForegroundColor Green
+        Write-Host "[SUCCESS] Created Desktop shortcut: $finalDesktopShortcut (Read-only)" -ForegroundColor Green
     }
     
     # Create Start Menu shortcut
@@ -359,8 +362,11 @@ try {
     # Rename Start Menu shortcut
     Rename-Item -Path $tempStartMenuShortcut -NewName "Cốc Cốc.lnk" -Force
     
+    # Set Start Menu shortcut to read-only
+    Set-ItemProperty -Path $finalStartMenuShortcut -Name IsReadOnly -Value $true
+    
     if (Test-Path $finalStartMenuShortcut) {
-        Write-Host "[SUCCESS] Created Start Menu shortcut: $finalStartMenuShortcut" -ForegroundColor Green
+        Write-Host "[SUCCESS] Created Start Menu shortcut: $finalStartMenuShortcut (Read-only)" -ForegroundColor Green
     }
 }
 catch {
