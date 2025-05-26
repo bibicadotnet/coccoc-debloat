@@ -1,15 +1,15 @@
-﻿<#
+<#
 .SYNOPSIS
     Cốc Cốc Browser Silent Installer - Makes the Cốc Cốc interface as clean as the original Chromium
 .DESCRIPTION
-1. Automatically downloads from the official source
-2. Installation without user interaction (silent install)
-3. Removes automatic update tasks and supports manual updates
-4. Optimizes Registry settings
-5. Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
+- Automatically downloads from the official source
+- Installation without user interaction (silent install)
+- Removes automatic update tasks and supports manual updates
+- Optimizes Registry settings
+- Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
-    Version: 1.1.1
+    Version: 1.2
 #>
 
 # Fix encoding issues
