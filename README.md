@@ -1,46 +1,121 @@
-# Giao diện Cốc Cốc sạch như Chromium nguyên bản
+---
 
-- Tắt các tiện ích mặc định (Từ Điển, Rủng Rỉnh)
-- Tắt Side Panel, Split View
-- Thay thế trang newtab bằng một trang trắng sạch sẽ
-- Tắt mọi tiến trình chạy ngầm và cập nhật tự động (hỗ trợ cập nhập thủ công qua `coccoc://settings/help`)
-- Tắt gần như mọi thứ có thể gửi thông tin về Google hay Cốc Cốc
-- Thiết lập quyền riêng tư ở mức nghiêm ngặt: tắt cookie của bên thứ ba, tắt thông báo, tắt định vị, tắt cảm biến chuyển động
-- Sử dụng tự động DNS Cloudflare để tăng tốc và bảo vệ quyền riêng tư.
-- Bật tính năng tiết kiệm RAM (Memory Saver)
-- .....
-### Cài đặt và cập nhập
-- Chạy `PowerShell` với quyền `Administrator` để cài đặt/cập nhập lại Cốc Cốc
-```
+# 🧼 Giao diện Cốc Cốc sạch như Chromium nguyên bản
+
+>
+  Mục tiêu: Giống giao diện Chrome/Chromium thuần, tối ưu hiệu năng, bảo vệ quyền riêng tư, dễ tùy chỉnh theo nhu cầu cá nhân.
+
+---
+
+## ✅ Các tính năng đã tắt hoặc điều chỉnh
+
+| Tính năng | Trạng thái |
+|----------|------------|
+| Tiện ích mặc định (Từ Điển, Rủng Rỉnh) | ✅ Đã tắt |
+| Side Panel | ✅ Đã tắt |
+| Split View | ✅ Đã tắt |
+| Tab mới (New Tab) | ✅ Thay thế bằng trang sạch không quảng cáo |
+| `CocCocCrashHandler` (tiến trình nền) | ✅ Đã tắt |
+| `CocCocUpdate` (tự động cập nhật) | ✅ Đã tắt |
+| Gửi dữ liệu về máy chủ Google/Cốc Cốc | ✅ Hầu hết đã bị vô hiệu hóa |
+| Quyền riêng tư | ✅ Thiết lập ở mức cao:<br> - Tắt cookie bên thứ ba<br> - Tắt thông báo<br> - Tắt định vị & cảm biến chuyển động |
+| DNS mặc định | ✅ Sử dụng Cloudflare để tăng tốc và bảo mật |
+| Tính năng tiết kiệm RAM | ✅ Bật chế độ Memory Saver |
+
+---
+
+## ⚙️ Cách cài đặt / cập nhật
+
+### Phương pháp 1: Chạy script PowerShell
+
+> ⚠️ Yêu cầu chạy PowerShell với quyền **Administrator**
+
+```powershell
 irm https://go.bibica.net/coccoc | iex
 ```
-- Hoặc chạy file [coccoc.bat](https://github.com/bibicadotnet/coccoc-debloat/archive/latest.zip) trực tiếp từ PC, sau cập nhập cho tiện
-### Tùy chỉnh thêm
-Shortcut Cốc Cốc chạy qua `--disable-features=CocCocSplitView,SidePanel` để tắt split view và side panel, cần bật lại thì xóa dòng này ở `Target` đi
 
-Click phải vào shortcut Cốc Cốc -> Chọn Properties  -> Trong tab Shortcut -> sẽ thấy ô Target
+### Phương pháp 2: Tải file `.bat` về và chạy trực tiếp
 
-- Tắt/Bật Split View thủ công
+📁 Download [`coccoc.bat`](https://github.com/bibicadotnet/coccoc-debloat/archive/latest.zip)
 
-  Copy trực tiếp link bên dưới vào trình duyệt, chọn Disabled/Enabled
+> 💡 Sau khi cài đặt, bạn có thể dùng file này để **cập nhật** nhanh chóng.
+
+---
+
+## 🔧 Tùy chỉnh nâng cao
+
+### 1. Tắt Split View và Side Panel qua shortcut
+
+👉 Click chuột phải vào shortcut → Chọn **Properties** → Tab **Shortcut** → Thêm đoạn sau vào ô **Target**:
+
+```text
+--disable-features=CocCocSplitView,SidePanel
+```
+
+Ví dụ:
+```
+"C:\Program Files\CocCoc\Browser\Application\browser.exe" --disable-features=CocCocSplitView,SidePanel
+```
+
+> 🔁 Để bật lại, chỉ cần xóa dòng trên khỏi phần `Target`.
+
+---
+
+### 2. Tắt/Bật Split View thủ công
+
+Dán đường dẫn sau vào thanh địa chỉ Cốc Cốc:
+
 ```
 coccoc://flags/#coccoc-split-view
 ```
-- Tắt/Bật Side Panel thủ công
 
-Copy trực tiếp link bên dưới vào trình duyệt, chọn Disabled/Enabled
+→ Chọn **Disabled** hoặc **Enabled** tương ứng.
+
+---
+
+### 3. Tắt/Bật Side Panel thủ công
+
+Dán đường dẫn sau vào thanh địa chỉ Cốc Cốc:
+
 ```
 coccoc://flags/#coccoc-side-panel
 ```
-💡 Trong trường hợp muốn bặt/tắt các tính năng khác cho phù hợp với nhu cầu cá nhân hơn
-- Mở `coccoc-debloat.reg` bật/tắt các tính năng, bằng cách thêm `;` đằng trước (hoặc xóa nội dung đó đi)
-- Chạy `coccoc-restore.reg` để xóa toàn bộ cấu hình cũ
-- Chạy lại `coccoc-debloat.reg` để áp dụng cấu hình mới
 
-### Tạo nhanh profile
-- Chạy `PowerShell` với quyền `Administrator` để tạo nhanh profile mới cho trình duyệt Cốc Cốc (hỗ trợ tùy chọn nơi chứa profile)
-```
+→ Chọn **Disabled** hoặc **Enabled** tương ứng.
+
+---
+
+## 📁 Quản lý cấu hình
+
+### 1. Chỉnh sửa cấu hình tinh chỉnh
+
+- Mở file `coccoc-restore.reg` để **khôi phục trạng thái ban đầu**.
+- Mở file `coccoc-debloat.reg` để **chỉnh sửa/tùy biến** các thiết lập.
+    - Thêm `;` phía trước dòng muốn tắt.
+    - Xóa `;` để bật lại.
+
+> 💡 Sau khi chỉnh sửa, hãy chạy lại file `.reg` để áp dụng thay đổi.
+
+---
+
+## 🧑‍💼 Tạo profile riêng biệt
+
+- Có thể tạo nhiều shortcut profile khác nhau (hỗ trợ tùy chọn nơi chứa profile riêng) cho từng mục đích sử dụng (ví dụ: làm việc, học tập, giải trí).
+
+### Phương pháp 1: Chạy script PowerShell
+
+```powershell
 irm https://go.bibica.net/coccoc-profile | iex
 ```
-Hoặc tạo 1 shortcut Cốc Cốc, thêm vào Target `--user-data-dir="C:\Private\coccoc_lamviec"` 
-- `C:\Private\coccoc_lamviec` đường dẫn nơi chứa profile
+
+### Phương pháp 2: Thêm tham số vào shortcut
+
+Thêm vào cuối `Target` trong shortcut:
+
+```text
+--user-data-dir="C:\Private\coccoc_lamviec"
+```
+
+> 📁 Đường dẫn `C:\Private\coccoc_lamviec` là nơi lưu trữ dữ liệu người dùng độc lập.
+
+---
