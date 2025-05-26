@@ -4,12 +4,12 @@
 .DESCRIPTION
     - Automatically downloads from the official source
     - Installation without user interaction (silent install)
-    - Removes automatic update tasks and supports manual updates
+    - Removes automatic update
     - Optimizes Registry settings
     - Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
-    Version: v1.2.1
+    Version: v1.2.2
 #>
 
 # Fix encoding issues
@@ -22,7 +22,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-Write-Host "`nCốc Cốc Browser Silent Installer v1.2.1" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc Browser Silent Installer v1.2.2" -BackgroundColor DarkGreen
 
 # Function to perform operation with retry logic
 function Invoke-WithRetry {
@@ -146,65 +146,20 @@ catch {
     exit
 }
 
-# 2. Configure Coc Coc Update policies (Auto-detect 32/64-bit)
-Write-Host "`nConfiguring Coc Coc Update policies..." -ForegroundColor Cyan
-
-$Is64BitOS = [Environment]::Is64BitOperatingSystem
-$BaseRegPath = if ($Is64BitOS) { 
-    "HKLM:\SOFTWARE\WOW6432Node\CocCoc"  # 32-bit app on 64-bit OS
-} else { 
-    "HKLM:\SOFTWARE\CocCoc"              # 32-bit app on 32-bit OS
-}
-
-$CocCocUpdateRegPath = "$BaseRegPath\Update"
-
-if (-not (Test-Path $CocCocUpdateRegPath)) {
-    New-Item -Path $CocCocUpdateRegPath -Force | Out-Null
-    Write-Host "Created registry path: $CocCocUpdateRegPath" -ForegroundColor Green
-}
-
-$updateSettings = @{
-    "AutoUpdateCheckPeriodMinutes" = 0
-    "UpdateDefault" = 0
-    "DisableAutoUpdateChecksCheckboxValue" = 1
-    "InstallDefault" = 0
-    "AllowManualUpdateCheck" = 1
-}
-
-foreach ($key in $updateSettings.Keys) {
-    Set-ItemProperty -Path $CocCocUpdateRegPath -Name $key -Value $updateSettings[$key] -Type DWord
-    Write-Host "Set $key = $($updateSettings[$key])" -ForegroundColor Cyan
-}
-
-$PolicyPath = "HKLM:\SOFTWARE\Policies\CocCoc\Update"
-if (-not (Test-Path $PolicyPath)) {
-    New-Item -Path $PolicyPath -Force | Out-Null
-}
-
-foreach ($key in $updateSettings.Keys) {
-    Set-ItemProperty -Path $PolicyPath -Name $key -Value $updateSettings[$key] -Type DWord
-}
-
-Write-Host "CocCoc Update configuration completed!" -ForegroundColor Green
-Write-Host "Registry path used: $CocCocUpdateRegPath" -ForegroundColor Yellow
-Write-Host "Policy path used: $PolicyPath" -ForegroundColor Yellow
-
-foreach ($key in $updateSettings.Keys) {
-    Set-ItemProperty -Path $CocCocUpdateRegPath -Name $key -Value $updateSettings[$key] -Type DWord
-}
-
-# 3. Disable CocCocCrashHandler processes
-Write-Host "`nDisabling CocCocCrashHandler components..." -ForegroundColor Cyan
+# 2. Disable CocCocUpdate CocCocCrashHandler processes
+Write-Host "`nDisabling CocCocUpdate CocCocCrashHandler components..." -ForegroundColor Cyan
 
 # Target all CrashHandler variants (both 32-bit and 64-bit)
-$crashHandlerFiles = @(
+$targetFiles = @(
     "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler.exe",
-    "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler64.exe", 
+    "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler64.exe",
     "${env:ProgramFiles(x86)}\CocCoc\Update\*\CocCocCrashHandler.exe",
-    "${env:ProgramFiles(x86)}\CocCoc\Update\*\CocCocCrashHandler64.exe"
+    "${env:ProgramFiles(x86)}\CocCoc\Update\*\CocCocCrashHandler64.exe",
+    "${env:ProgramFiles}\CocCoc\Update\CocCocUpdate.exe",
+    "${env:ProgramFiles(x86)}\CocCoc\Update\CocCocUpdate.exe"
 )
 
-foreach ($file in (Get-Item $crashHandlerFiles -ErrorAction SilentlyContinue | Where-Object { $_.Exists })) {
+foreach ($file in (Get-Item $targetFiles -ErrorAction SilentlyContinue)) {
     try {
         # 1. Stop any running instances
         $processName = $file.BaseName
@@ -221,13 +176,13 @@ foreach ($file in (Get-Item $crashHandlerFiles -ErrorAction SilentlyContinue | W
         Write-Host "[SUCCESS] Disabled: $($file.Name)" -ForegroundColor Green
     }
     catch {
-        Write-Host "[ERROR] Failed to disable $($file.Name): $_" -ForegroundColor Red
+        Write-Host "[ERROR] Failed to disable $($file.FullName): $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
-Write-Host "CocCocCrashHandler components disabled" -ForegroundColor Cyan
+Write-Host "CocCocUpdate CocCocCrashHandler components disabled"
 
-# 4. Remove scheduled update tasks with retry
+# 3. Remove scheduled update tasks with retry
 Write-Host "`nRemoving Coc Coc scheduled tasks..." -ForegroundColor Cyan
 
 $TasksToRemove = @("CocCoc*")
@@ -252,7 +207,7 @@ foreach ($taskName in $TasksToRemove) {
     }
 }
 
-# 5. Apply additional registry tweaks with retry
+# 4. Apply additional registry tweaks with retry
 Write-Host "`nApplying additional registry tweaks..." -ForegroundColor Cyan
 
 # First, apply restore registry
@@ -297,7 +252,7 @@ catch {
 }
 
 
-# 6. Creating shortcut with new arguments
+# 5. Creating shortcut with new arguments
 Write-Host "`nCreating new shortcut..." -ForegroundColor Cyan
 
 # Remove old Cốc Cốc shortcuts
@@ -400,5 +355,10 @@ Remove-Item -Path $DebloatRegFile -ErrorAction SilentlyContinue
 
 Write-Host "`nCoc Coc clean installation completed!" -BackgroundColor DarkGreen
 
-Write-Host "`nManual updates from Settings -> About Cốc Cốc will work, but automatic updates are completely disabled." -ForegroundColor Yellow
+Write-Host "`nAutomatic updates are completely disabled." -ForegroundColor Yellow
 Write-Host "Recommendation: Restart your computer to apply all changes." -ForegroundColor Yellow
+
+Write-Host "`nNOTICE: To update Cốc Cốc when needed, please:" -ForegroundColor Cyan -BackgroundColor DarkGreen
+Write-Host "1. Open PowerShell with Administrator privileges" -ForegroundColor White
+Write-Host "2. Run the following command: irm https://go.bibica.net/coccoc | iex" -ForegroundColor Yellow
+Write-Host "3. Wait for the installation process to complete" -ForegroundColor White
