@@ -36,7 +36,7 @@ irm https://go.bibica.net/coccoc | iex
 
 ### Phương pháp 2: Tải file `.bat` về và chạy trực tiếp
 
-📁 Download [`coccoc.bat`](https://github.com/bibicadotnet/coccoc-debloat/archive/latest.zip)
+📁 Download [`coccoc.bat`](#chạy-thủ-công-nhiều-phiên-bản-hoặc-bật-tính-tính-năng-tùy-chỉnh-dùng-an-toàn-nhất)
 
 > 💡 Sau khi cài đặt, bạn có thể dùng file này để **cập nhật** nhanh chóng.
 
@@ -118,6 +118,11 @@ Thêm vào cuối `Target` trong shortcut:
 ```
 %AppData%\Microsoft\Internet Explorer\Quick Launch\User Pinned\ImplicitAppShortcuts
 ```
-
-
+### Chạy thủ công nhiều phiên bản hoặc bật tính tính năng tùy chỉnh (dùng an toàn nhất)
+Để chạy thủ công các file .ps1 trên Windows, có thể làm theo các bước bên dưới
+- Download phiên bản [mới nhất](https://github.com/bibicadotnet/coccoc-debloat/archive/latest.zip) hoặc các [bản khác](https://github.com/bibicadotnet/coccoc-debloat/releases) tùy thích
+- Giải nén
+- Bên trong thư mục giải nén, chọn menu File -> PowerShell -> **Administrator** (sẽ tự chạy PowerShell ở ngay vị trí của thư mục, đỡ phải gõ nhiều lệnh)
+- Chạy `Set-ExecutionPolicy Bypass -Scope CurrentUser -Force`
+- Chạy `./install-coccoc.ps1`
 
