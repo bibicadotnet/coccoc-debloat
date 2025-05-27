@@ -34,7 +34,7 @@
 irm https://go.bibica.net/coccoc | iex
 ```
 
-### 🖥️ Chạy thủ công trên Windows
+### Phương pháp 2: Chạy thủ công trên Windows
 
 Để chạy thủ công các file `.ps1` trên Windows, làm theo các bước sau:
 
