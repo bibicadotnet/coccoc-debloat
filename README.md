@@ -34,13 +34,40 @@
 irm https://go.bibica.net/coccoc | iex
 ```
 
-### Phương pháp 2: Tải file `.bat` về và chạy trực tiếp
+### 🖥️ Chạy thủ công trên Windows
 
-📁 Download [`coccoc.bat`](#chạy-thủ-công-nhiều-phiên-bản-hoặc-bật-tính-tính-năng-tùy-chỉnh-dùng-an-toàn-nhất)
+Để chạy thủ công các file `.ps1` trên Windows, làm theo các bước sau:
 
-> 💡 Sau khi cài đặt, bạn có thể dùng file này để **cập nhật** nhanh chóng.
+1. 📥 **Tải mã nguồn**:
 
----
+   * [Phiên bản mới nhất](https://github.com/bibicadotnet/coccoc-debloat/archive/latest.zip)
+   * Hoặc xem các [bản phát hành khác](https://github.com/bibicadotnet/coccoc-debloat/releases)
+
+2. 📦 **Giải nén** file `.zip` vừa tải về.
+
+3. 📝 **Chuyển mã hóa file `.ps1` sang UTF-8 with BOM** (để hiển thị tiếng Việt chính xác):
+
+   * Mở file `.ps1` bằng **Notepad**.
+   * Vào **File → Save As...**
+   * Ở mục **Encoding**, chọn: `UTF-8 with BOM`
+   * Bấm **Save**
+
+4. 🚀 **Chạy PowerShell tại đúng thư mục**:
+
+   * Bên trong thư mục đã giải nén, bấm **File > Open PowerShell > Open Windows PowerShell as administrator**
+   * (Tùy phiên bản Windows, có thể là: chuột phải → chọn **Open in Terminal**)
+
+5. 🛡️ **Cho phép chạy script**:
+
+   ```powershell
+   Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
+   ```
+
+6. ▶️ **Chạy script chính**:
+
+   ```powershell
+   ./install-coccoc.ps1
+   ```
 
 ## 🔧 Tùy chỉnh nâng cao
 
@@ -117,12 +144,7 @@ Thêm vào cuối `Target` trong shortcut:
 ### Đường dẫn pin shortcut profile
 ```
 %AppData%\Microsoft\Internet Explorer\Quick Launch\User Pinned\ImplicitAppShortcuts
-```
-### Chạy thủ công nhiều phiên bản hoặc bật tính tính năng tùy chỉnh (dùng an toàn nhất)
-Để chạy thủ công các file .ps1 trên Windows, có thể làm theo các bước bên dưới
-- Download phiên bản [mới nhất](https://github.com/bibicadotnet/coccoc-debloat/archive/latest.zip) hoặc các [bản khác](https://github.com/bibicadotnet/coccoc-debloat/releases) tùy thích
-- Giải nén
-- Bên trong thư mục giải nén, chọn menu File -> PowerShell -> **Administrator** (sẽ tự chạy PowerShell ở ngay vị trí của thư mục, đỡ phải gõ nhiều lệnh)
-- Chạy `Set-ExecutionPolicy Bypass -Scope CurrentUser -Force`
-- Chạy `./install-coccoc.ps1`
+```   
+
+
 
