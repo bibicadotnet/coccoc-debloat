@@ -9,48 +9,12 @@
     - Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
-    Version: v1.2.3
+    Version: v1.2.2
 #>
+
+# Fix encoding issues
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 | Out-Null
-
-function Get-CorrectScriptContent {
-    param([string]$rawContent)
-    
-    $encodings = @(
-        [System.Text.Encoding]::UTF8,
-        [System.Text.Encoding]::GetEncoding(65001), # UTF-8
-        [System.Text.Encoding]::GetEncoding(65001, (New-Object System.Text.UTF8Encoding $true)), # UTF-8 BOM
-    
-    foreach ($encoding in $encodings) {
-        try {
-            $bytes = $encoding.GetBytes($rawContent)
-            $decoded = [System.Text.Encoding]::UTF8.GetString($bytes)
-            if ($decoded -match "[^\x00-\x7F]") { # Kiểm tra có ký tự Unicode
-                return $decoded
-            }
-        } catch {}
-    }
-    return $rawContent # Fallback
-}
-
-if ($MyInvocation.Line -match 'irm.*iex') {
-    # Khi chạy từ web
-    $webContent = (irm $MyInvocation.MyCommand.Source -UseBasicParsing).ToString()
-    $fixedContent = Get-CorrectScriptContent $webContent
-    Invoke-Expression $fixedContent
-    return
-}
-else {
-    $fileContent = if ($MyInvocation.MyCommand.Path) {
-        [System.IO.File]::ReadAllText($MyInvocation.MyCommand.Path)
-    } else {
-        $MyInvocation.MyCommand.ScriptBlock.ToString()
-    }
-    $fixedContent = Get-CorrectScriptContent $fileContent
-    Invoke-Expression $fixedContent
-    return
-}
 
 # Require Administrator privileges
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -58,9 +22,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-# Rest of your original script continues unchanged...
-Clear-Host
-Write-Host "`nCốc Cốc Browser Silent Installer v1.2.3" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc Browser Silent Installer v1.2.2" -BackgroundColor DarkGreen
 
 # Function to perform operation with retry logic
 function Invoke-WithRetry {
