@@ -11,22 +11,48 @@
     Requires: Administrator privileges
     Version: v1.2.3
 #>
-
-#region ENCODING FIXES (Works both locally and when downloaded via irm | iex)
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
-$ProgressPreference = 'SilentlyContinue'
-$ErrorActionPreference = 'Stop'
+chcp 65001 | Out-Null
 
-# Detect if running from web or local file
+function Get-CorrectScriptContent {
+    param([string]$rawContent)
+    
+    $encodings = @(
+        [System.Text.Encoding]::UTF8,
+        [System.Text.Encoding]::GetEncoding(65001), # UTF-8
+        [System.Text.Encoding]::GetEncoding(65001, (New-Object System.Text.UTF8Encoding $true)), # UTF-8 BOM
+    
+    foreach ($encoding in $encodings) {
+        try {
+            $bytes = $encoding.GetBytes($rawContent)
+            $decoded = [System.Text.Encoding]::UTF8.GetString($bytes)
+            if ($decoded -match "[^\x00-\x7F]") { # Kiểm tra có ký tự Unicode
+                return $decoded
+            }
+        } catch {}
+    }
+    return $rawContent # Fallback
+}
+
+# Xử lý cho mọi trường hợp
 if ($MyInvocation.Line -match 'irm.*iex') {
-    # When running via irm | iex, force UTF-8 content interpretation
-    $global:utf8Bytes = [System.Text.Encoding]::UTF8.GetBytes((irm -Uri "https://go.bibica.net/coccoc" -UseBasicParsing))
-    $global:scriptContent = [System.Text.Encoding]::UTF8.GetString($utf8Bytes)
-    Invoke-Expression $scriptContent
+    # Khi chạy từ web
+    $webContent = (irm $MyInvocation.MyCommand.Source -UseBasicParsing).ToString()
+    $fixedContent = Get-CorrectScriptContent $webContent
+    Invoke-Expression $fixedContent
     return
 }
-#endregion
+else {
+    # Khi chạy từ file
+    $fileContent = if ($MyInvocation.MyCommand.Path) {
+        [System.IO.File]::ReadAllText($MyInvocation.MyCommand.Path)
+    } else {
+        $MyInvocation.MyCommand.ScriptBlock.ToString()
+    }
+    $fixedContent = Get-CorrectScriptContent $fileContent
+    Invoke-Expression $fixedContent
+    return
+}
 
 # Require Administrator privileges
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
