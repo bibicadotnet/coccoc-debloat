@@ -34,7 +34,6 @@ function Get-CorrectScriptContent {
     return $rawContent # Fallback
 }
 
-# Xử lý cho mọi trường hợp
 if ($MyInvocation.Line -match 'irm.*iex') {
     # Khi chạy từ web
     $webContent = (irm $MyInvocation.MyCommand.Source -UseBasicParsing).ToString()
@@ -43,7 +42,6 @@ if ($MyInvocation.Line -match 'irm.*iex') {
     return
 }
 else {
-    # Khi chạy từ file
     $fileContent = if ($MyInvocation.MyCommand.Path) {
         [System.IO.File]::ReadAllText($MyInvocation.MyCommand.Path)
     } else {
