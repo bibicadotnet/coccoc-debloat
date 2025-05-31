@@ -21,7 +21,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Write-Host "This script requires Administrator rights. Please run PowerShell as Administrator." -ForegroundColor Red
     exit
 }
-
+Clear-Host
 Write-Host "`nCốc Cốc Browser Silent Installer v1.2.2" -BackgroundColor DarkGreen
 
 # Function to perform operation with retry logic
