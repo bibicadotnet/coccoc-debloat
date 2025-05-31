@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Cốc Cốc Browser Silent Installer - Makes the Cốc Cốc interface as clean as the original Chromium
 .DESCRIPTION
@@ -9,12 +9,24 @@
     - Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
-    Version: v1.2.3
+    Version: v1.2.4
 #>
 
-# Fix encoding issues
+#region ENCODING FIXES (Works both locally and when downloaded via irm | iex)
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-chcp 65001 | Out-Null
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+$ProgressPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
+
+# Detect if running from web or local file
+if ($MyInvocation.Line -match 'irm.*iex') {
+    # When running via irm | iex, force UTF-8 content interpretation
+    $global:utf8Bytes = [System.Text.Encoding]::UTF8.GetBytes((irm -Uri "https://go.bibica.net/coccoc" -UseBasicParsing))
+    $global:scriptContent = [System.Text.Encoding]::UTF8.GetString($utf8Bytes)
+    Invoke-Expression $scriptContent
+    return
+}
+#endregion
 
 # Require Administrator privileges
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -22,6 +34,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
+# Rest of your original script continues unchanged...
 Clear-Host
 Write-Host "`nCốc Cốc Browser Silent Installer v1.2.3" -BackgroundColor DarkGreen
 
