@@ -9,7 +9,7 @@
     - Creates Desktop and Start Menu shortcuts for Cốc Cốc (SplitView and SidePanel disabled by default)
 .NOTES
     Requires: Administrator privileges
-    Version: v1.2.4
+    Version: v1.2.3
 #>
 
 #region ENCODING FIXES (Works both locally and when downloaded via irm | iex)
