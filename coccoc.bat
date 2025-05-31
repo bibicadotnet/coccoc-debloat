@@ -1,7 +1,6 @@
 ﻿@echo off
 setlocal enabledelayedexpansion
 
-:: Kiểm tra quyền admin
 net session >nul 2>&1
 if !errorLevel! == 0 (
     goto :main
@@ -20,12 +19,12 @@ if not exist "install-coccoc.ps1" (
     exit /b 1
 )
 
-:: Chuẩn hoá lại file PowerShell về UTF8
+
 powershell -Command "Get-Content \"install-coccoc.ps1\" -Encoding UTF8 | Out-File \"install-coccoc-fixed.ps1\" -Encoding UTF8"
 del "install-coccoc.ps1" >nul 2>&1
 ren "install-coccoc-fixed.ps1" "install-coccoc.ps1" >nul 2>&1
 
-:: Thực thi file PowerShell
+
 powershell -ExecutionPolicy Bypass -File "install-coccoc.ps1"
 
 pause
