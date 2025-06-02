@@ -122,6 +122,9 @@ Windows Registry Editor Version 5.00
 ; Bật Use graphics acceleration when available
 "HardwareAccelerationModeEnabled"=dword:00000001
 
+; Tắt rò rỉ IP WebRTC bằng cách thiết lập WebRtcIPHandling thành disable_non_proxied_udp
+"WebRtcIPHandling"="disable_non_proxied_udp"
+
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallBlocklist]
 "1"="gfgbmghkdjckppeomloefmbphdfmokgd"
 "2"="afaljjbleihmahhpckngondmgohleljb"
