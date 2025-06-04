@@ -160,7 +160,7 @@ Dưới đây là phần hướng dẫn **bổ sung và làm rõ** liên quan đ
 - Mở thư mục chứa file .html vừa lưu.
 - 🖱 Chuột phải vào file đó → chọn Mở bằng (Open with) → Chọn ứng dụng khác (Choose another app).
 - Trong danh sách, tìm tới vị để với profile shortcut bạn muốn đặt làm mặc định (ví dụ: CocCoc - LamViec, nếu bạn đã đăng ký trình duyệt này qua script bat).
-- Bấm Oepn để hoàn tất.
+- Bấm Open để hoàn tất.
 
 > 🧠 **Lưu ý:**
 > Do giới hạn của Windows 10/11, không thể đặt trình duyệt mặc định hoàn toàn qua script – cần thực hiện thủ công như trên.
