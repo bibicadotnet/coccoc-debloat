@@ -4,7 +4,7 @@
 :: CONFIGURATION SECTION - EDIT THESE VALUES
 :: ==============================================
 set "CHROMIUM_PATH=C:\Program Files\CocCoc\Browser\Application\browser.exe"
-set "PROFILE_PATH=C:\private\coccoc_riengtu"
+set "PROFILE_PATH=%LOCALAPPDATA%\CocCoc\Browser\User Data\Default"
 set "EXTRA_ARGS=--disable-features=CocCocSplitView,SidePanel"
 set "BROWSER_NAME=CocCoc"
 set "BROWSER_DESC=CocCoc with custom profile"
