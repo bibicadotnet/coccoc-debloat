@@ -159,7 +159,8 @@ Dưới đây là phần hướng dẫn **bổ sung và làm rõ** liên quan đ
   - (Nhấn Ctrl + S trên trình duyệt → chọn định dạng “Webpage, complete”).
 - Mở thư mục chứa file .html vừa lưu.
 - 🖱 Chuột phải vào file đó → chọn Mở bằng (Open with) → Chọn ứng dụng khác (Choose another app).
-- Trong danh sách, tìm tới vị để với profile shortcut bạn muốn đặt làm mặc định (ví dụ: CocCoc - LamViec, nếu bạn đã đăng ký trình duyệt này qua script bat).
+  - ✅ Đánh dấu vào ô “Always use this app to open .html files”
+- Trong danh sách, tìm tới vị để với profile shortcut bạn muốn đặt làm mặc định (ví dụ: `coccoc_lamviec`, nếu đã đăng ký trình duyệt này qua script bat).
 - Bấm Open để hoàn tất.
 
 > 🧠 **Lưu ý:**
