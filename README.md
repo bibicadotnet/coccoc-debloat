@@ -155,43 +155,12 @@ Dưới đây là phần hướng dẫn **bổ sung và làm rõ** liên quan đ
 
 ## 🌐 Thiết lập trình duyệt mặc định (cho profile tùy chỉnh)
 
-Nếu bạn sử dụng nhiều profile Cốc Cốc (ví dụ: `lamviec`, `hoctap`, `riengtu`...), Windows **không hỗ trợ chọn chính xác profile nào** khi đặt mặc định, có thể khắc phục bằng cách:
-
-### ✅ Sử dụng script `CocCoc-default-apps-multi-profile.bat`
-
-> 📁 Script này dùng để **đăng ký trình duyệt Cốc Cốc với profile cụ thể** làm mặc định cho hệ thống.
-
----
-
-### ✏️ Cách sử dụng:
-
-1. 🔧 **Mở file `CocCoc-default-apps-multi-profile.bat` để chỉnh sửa**
-2. Tìm dòng:
-
-   ```bat
-   set "PROFILE_PATH=..."
-   ```
-3. ✅ **Thay đường dẫn profile mong muốn**, ví dụ:
-
-   ```bat
-   set "PROFILE_PATH=C:\Private\coccoc_lamviec"
-   ```
-4. 💾 Lưu lại thay đổi.
-
----
-
-### 🚀 Chạy script:
-
-* **Nhấp chuột phải** vào file `.bat` → chọn **Run as administrator**
-
----
-
-### 🛠 Sau khi chạy:
-
-* Windows sẽ nhận diện Cốc Cốc kèm profile đó như một **ứng dụng trình duyệt mới**
-* Script sẽ mở phần **Default apps** để bạn thiết lập thủ công:
-  * Chọn trình duyệt mặc định là tên bạn đã đặt trong script (thường là `CocCoc`)
----
+- Lưu bất kỳ trang web nào về máy dưới dạng file .html
+  - (Nhấn Ctrl + S trên trình duyệt → chọn định dạng “Webpage, complete”).
+- Mở thư mục chứa file .html vừa lưu.
+- 🖱 Chuột phải vào file đó → chọn Mở bằng (Open with) → Chọn ứng dụng khác (Choose another app).
+- Trong danh sách, tìm tới vị để với profile shortcut bạn muốn đặt làm mặc định (ví dụ: CocCoc - LamViec, nếu bạn đã đăng ký trình duyệt này qua script bat).
+- Bấm Oepn để hoàn tất.
 
 > 🧠 **Lưu ý:**
 > Do giới hạn của Windows 10/11, không thể đặt trình duyệt mặc định hoàn toàn qua script – cần thực hiện thủ công như trên.
