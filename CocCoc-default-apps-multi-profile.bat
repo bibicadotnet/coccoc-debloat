@@ -95,11 +95,6 @@ echo 3. Look for "Web browser" section
 echo 4. Click on the current default browser
 echo 5. Select "%BROWSER_NAME%" from the list
 echo.
-echo Alternatively, you can:
-echo - Right-click on any HTML file
-echo - Select "Open with" ^> "Choose another app"
-echo - Select "%BROWSER_NAME%" and check "Always use this app"
-echo.
 
 :: Try alternative method using assoc command (may work in some cases)
 echo Attempting alternative method...
