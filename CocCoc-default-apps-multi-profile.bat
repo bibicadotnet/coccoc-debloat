@@ -4,9 +4,10 @@
 :: CONFIGURATION SECTION - EDIT THESE VALUES
 :: ==============================================
 set "CHROMIUM_PATH=C:\Program Files\CocCoc\Browser\Application\browser.exe"
-set "PROFILE_PATH=C:\Private\coccoc_lamviec"
+set "PROFILE_PATH=C:\private\coccoc_riengtu"
+set "EXTRA_ARGS=--disable-features=CocCocSplitView,SidePanel"
 set "BROWSER_NAME=CocCoc"
-set "BROWSER_DESC=CocCoc default browser with custom profile"
+set "BROWSER_DESC=CocCoc with custom profile"
 
 :: ==============================================
 :: SYSTEM CHECKS
@@ -49,18 +50,18 @@ reg delete "HKLM\Software\Classes\%BROWSER_NAME%URL" /f >nul 2>&1
 :: Register browser capabilities
 reg add "HKLM\Software\Clients\StartMenuInternet\%BROWSER_NAME%" /ve /d "%BROWSER_NAME%" /f
 reg add "HKLM\Software\Clients\StartMenuInternet\%BROWSER_NAME%\DefaultIcon" /ve /d "\"%CHROMIUM_PATH%\"" /f
-reg add "HKLM\Software\Clients\StartMenuInternet\%BROWSER_NAME%\shell\open\command" /ve /d "\"%CHROMIUM_PATH%\" --user-data-dir=\"%PROFILE_PATH%\" \"%%1\"" /f
+reg add "HKLM\Software\Clients\StartMenuInternet\%BROWSER_NAME%\shell\open\command" /ve /d "\"%CHROMIUM_PATH%\" --user-data-dir=\"%PROFILE_PATH%\" %EXTRA_ARGS% \"%%1\"" /f
 
 :: Register file associations
 reg add "HKLM\Software\Classes\%BROWSER_NAME%HTML" /ve /d "%BROWSER_NAME% Document" /f
 reg add "HKLM\Software\Classes\%BROWSER_NAME%HTML\DefaultIcon" /ve /d "\"%CHROMIUM_PATH%\"" /f
-reg add "HKLM\Software\Classes\%BROWSER_NAME%HTML\shell\open\command" /ve /d "\"%CHROMIUM_PATH%\" --user-data-dir=\"%PROFILE_PATH%\" \"%%1\"" /f
+reg add "HKLM\Software\Classes\%BROWSER_NAME%HTML\shell\open\command" /ve /d "\"%CHROMIUM_PATH%\" --user-data-dir=\"%PROFILE_PATH%\" %EXTRA_ARGS% \"%%1\"" /f
 
 :: Register URL protocols
 reg add "HKLM\Software\Classes\%BROWSER_NAME%URL" /ve /d "%BROWSER_NAME% URL" /f
 reg add "HKLM\Software\Classes\%BROWSER_NAME%URL" /v "URL Protocol" /d "" /f
 reg add "HKLM\Software\Classes\%BROWSER_NAME%URL\DefaultIcon" /ve /d "\"%CHROMIUM_PATH%\"" /f
-reg add "HKLM\Software\Classes\%BROWSER_NAME%URL\shell\open\command" /ve /d "\"%CHROMIUM_PATH%\" --user-data-dir=\"%PROFILE_PATH%\" \"%%1\"" /f
+reg add "HKLM\Software\Classes\%BROWSER_NAME%URL\shell\open\command" /ve /d "\"%CHROMIUM_PATH%\" --user-data-dir=\"%PROFILE_PATH%\" %EXTRA_ARGS% \"%%1\"" /f
 
 :: Set capabilities
 reg add "HKLM\Software\Clients\StartMenuInternet\%BROWSER_NAME%\Capabilities" /v "ApplicationName" /d "%BROWSER_NAME%" /f
@@ -104,12 +105,7 @@ echo.
 echo Attempting alternative method...
 assoc .html=%BROWSER_NAME%HTML >nul 2>&1
 assoc .htm=%BROWSER_NAME%HTML >nul 2>&1
-ftype %BROWSER_NAME%HTML="%CHROMIUM_PATH%" --user-data-dir="%PROFILE_PATH%" "%%1" >nul 2>&1
-
-:: Remove the problematic lines that cause "Access denied"
-:: These lines are commented out because they don't work on Windows 10/11:
-:: reg add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice" /v "ProgId" /d "%BROWSER_NAME%URL" /f
-:: reg add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" /v "ProgId" /d "%BROWSER_NAME%URL" /f
+ftype %BROWSER_NAME%HTML="%CHROMIUM_PATH%" --user-data-dir="%PROFILE_PATH%" %EXTRA_ARGS% "%%1" >nul 2>&1
 
 :: Open default apps settings for manual configuration
 start "" "ms-settings:defaultapps"
