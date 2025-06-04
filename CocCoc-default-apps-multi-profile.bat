@@ -6,7 +6,7 @@
 set "CHROMIUM_PATH=C:\Program Files\CocCoc\Browser\Application\browser.exe"
 set "PROFILE_PATH=C:\Private\coccoc_lamviec"
 set "BROWSER_NAME=CocCoc"
-set "BROWSER_DESC=CocCoc with custom profile"
+set "BROWSER_DESC=CocCoc default browser with custom profile"
 
 :: ==============================================
 :: SYSTEM CHECKS
@@ -81,15 +81,37 @@ reg add "HKLM\Software\Clients\StartMenuInternet\%BROWSER_NAME%\Capabilities\URL
 reg add "HKLM\Software\RegisteredApplications" /v "%BROWSER_NAME%" /d "Software\Clients\StartMenuInternet\%BROWSER_NAME%\Capabilities" /f
 
 :: ==============================================
-:: SET AS DEFAULT BROWSER
+:: ALTERNATE APPROACH FOR DEFAULT BROWSER
 :: ==============================================
-echo Setting %BROWSER_NAME% as default browser...
+echo Browser registered successfully!
+echo.
+echo NOTE: Due to Windows 10/11 security restrictions, automatic default browser
+echo setting is not possible through registry. Please follow these steps:
+echo.
+echo 1. The Windows Settings app will open automatically
+echo 2. Go to Apps ^> Default apps
+echo 3. Look for "Web browser" section
+echo 4. Click on the current default browser
+echo 5. Select "%BROWSER_NAME%" from the list
+echo.
+echo Alternatively, you can:
+echo - Right-click on any HTML file
+echo - Select "Open with" ^> "Choose another app"
+echo - Select "%BROWSER_NAME%" and check "Always use this app"
+echo.
 
-:: For Windows 10/11
-reg add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice" /v "ProgId" /d "%BROWSER_NAME%URL" /f
-reg add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" /v "ProgId" /d "%BROWSER_NAME%URL" /f
+:: Try alternative method using assoc command (may work in some cases)
+echo Attempting alternative method...
+assoc .html=%BROWSER_NAME%HTML >nul 2>&1
+assoc .htm=%BROWSER_NAME%HTML >nul 2>&1
+ftype %BROWSER_NAME%HTML="%CHROMIUM_PATH%" --user-data-dir="%PROFILE_PATH%" "%%1" >nul 2>&1
 
-:: Open default apps settings to verify
+:: Remove the problematic lines that cause "Access denied"
+:: These lines are commented out because they don't work on Windows 10/11:
+:: reg add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice" /v "ProgId" /d "%BROWSER_NAME%URL" /f
+:: reg add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" /v "ProgId" /d "%BROWSER_NAME%URL" /f
+
+:: Open default apps settings for manual configuration
 start "" "ms-settings:defaultapps"
 
 :: ==============================================
@@ -97,6 +119,7 @@ start "" "ms-settings:defaultapps"
 :: ==============================================
 echo.
 echo Configuration complete!
-echo Please verify %BROWSER_NAME% is set as default in Windows Settings.
+echo Your browser has been registered with Windows.
+echo Please manually set it as default using the Windows Settings that just opened.
 echo.
 pause
