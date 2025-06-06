@@ -144,12 +144,7 @@ Thêm vào cuối `Target` trong shortcut:
 ### Đường dẫn pin shortcut profile
 ```
 %AppData%\Microsoft\Internet Explorer\Quick Launch\User Pinned\ImplicitAppShortcuts
-```   
-Dưới đây là phần hướng dẫn **“Thiết lập trình duyệt mặc định”** được viết thêm để chèn vào cuối nội dung của bạn, hoàn toàn phù hợp với giọng văn và cấu trúc tài liệu hiện tại:
-
----
-
-Dưới đây là phần hướng dẫn **bổ sung và làm rõ** liên quan đến việc sử dụng `CocCoc-default-apps-multi-profile.bat` để **thiết lập trình duyệt mặc định**, đặc biệt khi bạn có **nhiều profile riêng biệt**:
+```
 
 ---
 
