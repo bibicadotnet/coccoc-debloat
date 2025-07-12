@@ -12,9 +12,9 @@
     Version: v1.2.3
 #>
 
-# Set console encoding to UTF-8 for proper character display
+# Fix encoding issues
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$ProgressPreference = 'SilentlyContinue'
+chcp 65001 | Out-Null
 
 # Require Administrator privileges
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
