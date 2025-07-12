@@ -12,13 +12,13 @@
     Version: v1.2.3
 #>
 
-# Fix encoding issues
+# Set console encoding to UTF-8 for proper character display
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-chcp 65001 | Out-Null
+$ProgressPreference = 'SilentlyContinue'
 
 # Require Administrator privileges
-if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "This script requires Administrator rights. Please run PowerShell as Administrator." -ForegroundColor Red
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
     exit
 }
 Clear-Host
