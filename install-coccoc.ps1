@@ -18,9 +18,14 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Require Administrator privileges
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    if ([string]::IsNullOrEmpty($PSCommandPath)) {
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://go.bibica.net/chromium | iex`"" -Verb RunAs
+    } else {
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    }
     exit
 }
+
 Clear-Host
 Write-Host "`nCốc Cốc Browser Silent Installer v1.2.3" -BackgroundColor DarkGreen
 
