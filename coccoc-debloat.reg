@@ -125,6 +125,12 @@ Windows Registry Editor Version 5.00
 ; Tắt rò rỉ IP WebRTC bằng cách thiết lập WebRtcIPHandling thành disable_non_proxied_udp
 "WebRtcIPHandling"="disable_non_proxied_udp"
 
+; Không cho phép các trang web liên quan xem hoạt động của bạn trong nhóm
+"RelatedWebsiteSetsEnabled"=dword:00000000
+
+; Không cho phép tự động điền bằng AI
+"AutofillPredictionSettings"=dword:00000002
+
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallBlocklist]
 "1"="gfgbmghkdjckppeomloefmbphdfmokgd"
 "2"="afaljjbleihmahhpckngondmgohleljb"
