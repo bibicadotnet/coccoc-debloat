@@ -301,7 +301,7 @@ try {
     Write-Host "Creating Desktop shortcut..." -ForegroundColor Gray
     $DesktopShortcut = $WshShell.CreateShortcut($tempDesktopShortcut)
     $DesktopShortcut.TargetPath = "$browserPath"
-    $DesktopShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
+    $DesktopShortcut.Arguments = "--no-first-run --no-default-browser-check --disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $DesktopShortcut.IconLocation = "$browserPath, 0"
     $DesktopShortcut.Save()
 
@@ -318,7 +318,7 @@ try {
     Write-Host "Creating Start Menu shortcut..." -ForegroundColor Gray
     $StartMenuShortcut = $WshShell.CreateShortcut($tempStartMenuShortcut)
     $StartMenuShortcut.TargetPath = "$browserPath"
-    $StartMenuShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
+    $StartMenuShortcut.Arguments = "--no-first-run --no-default-browser-check --disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $StartMenuShortcut.IconLocation = "$browserPath, 0"
     $StartMenuShortcut.Save()
 
