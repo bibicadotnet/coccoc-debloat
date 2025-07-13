@@ -18,7 +18,7 @@
 | `CocCocCrashHandler` (tiến trình nền) | ✅ Đã tắt |
 | `CocCocUpdate` (tự động cập nhật) | ✅ Đã tắt |
 | Gửi dữ liệu về máy chủ Google/Cốc Cốc | ✅ Hầu hết đã bị vô hiệu hóa |
-| Quyền riêng tư | ✅ Thiết lập ở mức cao:<br> - Tắt cookie bên thứ ba<br> - Tắt thông báo<br> - Tắt định vị & cảm biến chuyển động |
+| Quyền riêng tư | ✅ Thiết lập ở mức cao:<br> - Tắt cookie bên thứ ba<br> - Tắt thông báo<br> - Tắt định vị & cảm biến chuyển động <br> - Cài đặt Canvas Blocker giúp bạn ẩn danh hơn khi lướt web|
 | DNS mặc định | ✅ Sử dụng Cloudflare để tăng tốc và bảo mật |
 | Tính năng tiết kiệm RAM | ✅ Bật chế độ Balanced memory savings |
 
