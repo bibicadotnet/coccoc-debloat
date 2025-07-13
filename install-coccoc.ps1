@@ -19,16 +19,12 @@ chcp 65001 | Out-Null
 # Require Administrator privileges
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     if ([string]::IsNullOrEmpty($PSCommandPath)) {
-        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; chcp 65001 | Out-Null; irm https://go.bibica.net/coccoc | iex`"" -Verb RunAs
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://go.bibica.net/coccoc | iex`"" -Verb RunAs
     } else {
-        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; chcp 65001 | Out-Null; & '$PSCommandPath'`"" -Verb RunAs
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
     }
     exit
 }
-
-# Re-apply encoding settings after elevation (in case of encoding loss)
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-chcp 65001 | Out-Null
 
 Clear-Host
 Write-Host "`nCốc Cốc Browser Silent Installer v1.2.3" -BackgroundColor DarkGreen
@@ -305,7 +301,7 @@ try {
     Write-Host "Creating Desktop shortcut..." -ForegroundColor Gray
     $DesktopShortcut = $WshShell.CreateShortcut($tempDesktopShortcut)
     $DesktopShortcut.TargetPath = "$browserPath"
-    $DesktopShortcut.Arguments = "--no-first-run --no-default-browser-check --disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
+    $DesktopShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $DesktopShortcut.IconLocation = "$browserPath, 0"
     $DesktopShortcut.Save()
 
@@ -322,7 +318,7 @@ try {
     Write-Host "Creating Start Menu shortcut..." -ForegroundColor Gray
     $StartMenuShortcut = $WshShell.CreateShortcut($tempStartMenuShortcut)
     $StartMenuShortcut.TargetPath = "$browserPath"
-    $StartMenuShortcut.Arguments = "--no-first-run --no-default-browser-check --disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
+    $StartMenuShortcut.Arguments = "--disable-features=CocCocSplitView,SidePanel --profile-directory=Default"
     $StartMenuShortcut.IconLocation = "$browserPath, 0"
     $StartMenuShortcut.Save()
 
