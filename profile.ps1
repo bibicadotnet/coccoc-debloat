@@ -11,10 +11,13 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 | Out-Null
 
-#region -----[ INITIALIZATION ]-----
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "`n[!] VUI LONG CHAY BANG QUYEN ADMIN`n" -ForegroundColor Red
-    pause
+# Require Administrator privileges
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    if ([string]::IsNullOrEmpty($PSCommandPath)) {
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://go.bibica.net/coccoc-profile | iex`"" -Verb RunAs
+    } else {
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    }
     exit
 }
 
