@@ -116,8 +116,8 @@ Windows Registry Editor Version 5.00
 ; Bật Memory Saver -> Balanced memory savings
 "MemorySaverModeSavings"=dword:00000001
 
-; Tắt Preload pages
-"NetworkPredictionOptions"=dword:00000002
+; Bật Preload pages
+"NetworkPredictionOptions"=dword:00000000
 
 ; Bật Use graphics acceleration when available
 "HardwareAccelerationModeEnabled"=dword:00000001
