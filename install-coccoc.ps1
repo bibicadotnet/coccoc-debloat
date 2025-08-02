@@ -123,7 +123,7 @@ if (Test-Path $browserPath) {
 # Cleanup
 Remove-Item $installer -ErrorAction SilentlyContinue
 
-Write-Host "`nCoc Coc clean installation completed!" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc installation completed!" -BackgroundColor DarkGreen
 
 Write-Host "`nAutomatic updates are completely disabled." -ForegroundColor Yellow
 Write-Host "Recommendation: Restart your computer to apply all changes." -ForegroundColor Yellow
