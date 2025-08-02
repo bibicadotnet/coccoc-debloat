@@ -2,6 +2,13 @@ Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc]
 
+; Không dùng AI
+"GeminiSettings"=dword:00000001
+"GenAILocalFoundationalModelSettings"=dword:00000001
+"AutofillPredictionSettings"=dword:00000002
+"HelpMeWriteSettings"=dword:00000002
+"AIModeSettings"=dword:00000001
+
 ; Tắt Access Code Cast
 "AccessCodeCastEnabled"=dword:00000000
 
@@ -10,9 +17,6 @@ Windows Registry Editor Version 5.00
 
 ; Tắt Trang lỗi thay thế
 "AlternateErrorPagesEnabled"=dword:00000000
-
-; Bật Cài đặt mô hình nền cục bộ AI (GenAI)
-"GenAILocalFoundationalModelSettings"=dword:00000001
 
 ; Tắt Cảnh báo mật khẩu bị rò rỉ
 "PasswordDismissCompromisedAlertEnabled"=dword:00000000
@@ -128,8 +132,29 @@ Windows Registry Editor Version 5.00
 ; Không cho phép các trang web liên quan xem hoạt động của bạn trong nhóm
 "RelatedWebsiteSetsEnabled"=dword:00000000
 
-; Không cho phép tự động điền bằng AI
-"AutofillPredictionSettings"=dword:00000002
+; Automatically switch to more secure connections with Automatic HTTPS
+"HttpsUpgradesEnabled"=dword:00000001
+
+; The shopping list feature will not be available to users
+"ShoppingListEnabled"=dword:00000000
+
+; Disable receiving Safe Browsing surveys
+"SafeBrowsingSurveysEnabled"=dword:00000000
+
+; Disable Safe Browsing download deep scans
+"SafeBrowsingDeepScanningEnabled"=dword:00000000
+
+; Disable alternate error pages
+"AlternateErrorPagesEnabled"=dword:00000000
+
+; Disable the default browser check on startup
+"DefaultBrowserSettingEnabled"=dword:00000000
+
+; Tắt Tìm kiếm bên cạnh (Side Search)
+"SideSearchEnabled"=dword:00000000
+
+; Tắt Gửi phản hồi người dùng
+"UserFeedbackAllowed"=dword:00000000
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallBlocklist]
 "1"="gfgbmghkdjckppeomloefmbphdfmokgd"
