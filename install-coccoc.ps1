@@ -16,7 +16,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 Clear-Host
 Write-Host "Cốc Cốc Browser Installer v1.2.4" -BackgroundColor DarkGreen
-Write-Host "`nStarting Coc Coc download and installation..." -ForegroundColor Cyan
+Write-Host "`nStarting download and installation..." -ForegroundColor Cyan
 
 # Kill processes
 @("browser", "CocCocUpdate", "CocCocCrashHandler*") | ForEach-Object {
