@@ -92,9 +92,9 @@ if (Test-Path $browserPath) {
         [Environment]::GetFolderPath("CommonPrograms")
     ) | ForEach-Object {
         if (Test-Path $_) {
-            Get-ChildItem "$_\*Cốc Cốc*.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
-            Get-ChildItem "$_\*CocCoc*.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
-            Get-ChildItem "$_\*Coc Coc*.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+            Get-ChildItem "$_\Cốc Cốc.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+     #       Get-ChildItem "$_\*CocCoc*.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+     #       Get-ChildItem "$_\*Coc Coc*.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
         }
     }
     
