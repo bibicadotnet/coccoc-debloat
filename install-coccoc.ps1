@@ -1,5 +1,5 @@
 <#
-Cốc Cốc Browser Silent Installer - Ultra Compact
+Cốc Cốc Browser Silent Installer
 - Downloads & installs silently
 - Disables auto-update & crash reporter
 - Creates clean shortcuts
