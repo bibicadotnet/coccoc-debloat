@@ -41,11 +41,16 @@ $urls = @(
 
 foreach ($url in $urls) {
     try {
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing -TimeoutSec 30
+        # Use WebClient for faster download
+        $webClient = New-Object System.Net.WebClient
+        $webClient.DownloadFile($url, $installer)
+        $webClient.Dispose()
         break
     }
-    catch { continue }
+    catch { 
+        if ($webClient) { $webClient.Dispose() }
+        continue 
+    }
 }
 
 Start-Process -FilePath $installer -ArgumentList "/silent /install" -Wait
