@@ -132,8 +132,9 @@ Windows Registry Editor Version 5.00
 ; Không cho phép các trang web liên quan xem hoạt động của bạn trong nhóm
 "RelatedWebsiteSetsEnabled"=dword:00000000
 
-; Automatically switch to more secure connections with Automatic HTTPS
+; Automatically switch to more secure connections with Automatic HTTPS - Always use secure connections
 "HttpsUpgradesEnabled"=dword:00000001
+"HttpsOnlyMode"="force_enabled"
 
 ; The shopping list feature will not be available to users
 "ShoppingListEnabled"=dword:00000000
@@ -155,6 +156,9 @@ Windows Registry Editor Version 5.00
 
 ; Tắt Gửi phản hồi người dùng
 "UserFeedbackAllowed"=dword:00000000
+
+; Tắt hỗ trợ xử lý lỗi chính tả
+"SpellCheckServiceEnabled"=dword:00000000
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallBlocklist]
 "1"="gfgbmghkdjckppeomloefmbphdfmokgd"
