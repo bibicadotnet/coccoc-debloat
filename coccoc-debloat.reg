@@ -56,6 +56,7 @@ Windows Registry Editor Version 5.00
 
 ; Tắt Gửi phản hồi người dùng
 "UserFeedbackAllowed"=dword:00000000
+"FeedbackSurveysEnabled"=dword:00000000
 
 ; Tắt Make searches and browsing better
 "UrlKeyedAnonymizedDataCollectionEnabled"=dword:00000000
@@ -153,9 +154,6 @@ Windows Registry Editor Version 5.00
 
 ; Tắt Tìm kiếm bên cạnh (Side Search)
 "SideSearchEnabled"=dword:00000000
-
-; Tắt Gửi phản hồi người dùng
-"UserFeedbackAllowed"=dword:00000000
 
 ; Tắt hỗ trợ xử lý lỗi chính tả
 "SpellCheckServiceEnabled"=dword:00000000
