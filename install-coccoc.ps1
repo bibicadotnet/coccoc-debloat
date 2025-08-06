@@ -68,19 +68,12 @@ Get-Item "${env:ProgramFiles}\CocCoc\Update\*\CocCocCrashHandler*.exe", "${env:P
 Get-ScheduledTask -TaskName "CocCoc*" -ErrorAction SilentlyContinue | Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
 
 # Apply registry tweaks
-@(
-    @{ "name" = "restore"; "url" = "https://raw.githubusercontent.com/bibicadotnet/coccoc-debloat/refs/heads/main/coccoc-restore.reg" },
-    @{ "name" = "debloat"; "url" = "https://raw.githubusercontent.com/bibicadotnet/coccoc-debloat/refs/heads/main/coccoc-debloat.reg" }
-) | ForEach-Object {
-    try {
-        $regFile = "$env:TEMP\$($_.name).reg"
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri $_.url -OutFile $regFile -UseBasicParsing -TimeoutSec 15
-        Start-Process "regedit.exe" -ArgumentList "/s `"$regFile`"" -Wait -NoNewWindow
-        Remove-Item $regFile -ErrorAction SilentlyContinue
-    }
-    catch { }
-}
+try {
+    $reg = "$env:TEMP\debloat.reg"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/bibicadotnet/coccoc-debloat/refs/heads/main/coccoc-debloat.reg" -OutFile $reg -UseBasicParsing -TimeoutSec 15
+    Start-Process "regedit.exe" -ArgumentList "/s `"$reg`"" -Wait -NoNewWindow
+    Remove-Item $reg -ErrorAction SilentlyContinue
+} catch {}
 
 # Create shortcuts
 $browserPath = "${env:ProgramFiles}\CocCoc\Browser\Application\browser.exe"
