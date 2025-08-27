@@ -89,7 +89,7 @@ Windows Registry Editor Version 5.00
 "SpellcheckEnabled"=dword:00000000
 
 ; Cho phép tiếp tục hỗ trợ các tiện ích Manifest V2
-"ExtensionManifestV2Availability"=dword:00000002
+; "ExtensionManifestV2Availability"=dword:00000002
 
 ; Tắt Help improve security on the web for everyone
 "SafeBrowsingExtendedReportingEnabled"=dword:00000000
@@ -172,3 +172,4 @@ Windows Registry Editor Version 5.00
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionSettings]
 ; Canvas Blocker - Fingerprint Protect
 "nomnklagbgmgghhjidfhnoelnjfndfpd"="{\"update_url\":\"https://clients2.google.com/service/update2/crx\",\"installation_mode\":\"normal_installed\"}"
+
