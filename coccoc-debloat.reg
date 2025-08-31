@@ -2,9 +2,10 @@ Windows Registry Editor Version 5.00
 
 ; Phục hồi về mặc định
 [-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc]
+[-HKEY_CURRENT_USER\SOFTWARE\Policies\Coccoc]
 
 ; Cấu hình cài đặt
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc]
+[HKEY_CURRENT_USER\SOFTWARE\Policies\CocCoc]
 
 ; Không dùng AI
 "GeminiSettings"=dword:00000001
@@ -88,7 +89,7 @@ Windows Registry Editor Version 5.00
 ; Tắt Spell check / Kiểm tra chính tả
 "SpellcheckEnabled"=dword:00000000
 
-; Cho phép tiếp tục hỗ trợ các tiện ích Manifest V2
+; Cho phép tiếp tục hỗ trợ các tiện ích Manifest V2 (không còn hỗ trợ từ 139)
 ; "ExtensionManifestV2Availability"=dword:00000002
 
 ; Tắt Help improve security on the web for everyone
@@ -162,14 +163,25 @@ Windows Registry Editor Version 5.00
 ; Tắt hỗ trợ xử lý lỗi chính tả
 "SpellCheckServiceEnabled"=dword:00000000
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallBlocklist]
+[HKEY_CURRENT_USER\SOFTWARE\Policies\CocCoc\ExtensionInstallBlocklist]
 "1"="gfgbmghkdjckppeomloefmbphdfmokgd"
 "2"="afaljjbleihmahhpckngondmgohleljb"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionInstallForcelist]
+[HKEY_CURRENT_USER\SOFTWARE\Policies\CocCoc\ExtensionInstallForcelist]
 "1"="jaadjnlkjnhohljficgoddcjmndjfdmi"  ; Blank New Tab Page
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\CocCoc\ExtensionSettings]
+;[HKEY_CURRENT_USER\SOFTWARE\Policies\CocCoc\ExtensionSettings]
 ; Canvas Blocker - Fingerprint Protect
-"nomnklagbgmgghhjidfhnoelnjfndfpd"="{\"update_url\":\"https://clients2.google.com/service/update2/crx\",\"installation_mode\":\"normal_installed\"}"
+;"nomnklagbgmgghhjidfhnoelnjfndfpd"="{\"update_url\":\"https://clients2.google.com/service/update2/crx\",\"installation_mode\":\"normal_installed\"}"
 
+[HKEY_CURRENT_USER\SOFTWARE\Policies\CocCoc\URLBlocklist]
+"1"="coccoc.com"
+"2"="qc.coccoc.com"
+"3"="qccdn.coccoc.com"
+"4"="cdn-qc.coccoc.com"
+"5"="qccoccocmedia.vn"
+"6"="catalog.qc.coccoc.com"
+"7"="qc-static.coccoc.com"
+"8"="ntrb.qc.coccoc.com"
+"9"="context.qc.coccoc.com"
+"10"="qcvod.coccoc.com"
