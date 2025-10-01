@@ -95,9 +95,9 @@ Windows Registry Editor Version 5.00
 ; Tắt Help improve security on the web for everyone
 "SafeBrowsingExtendedReportingEnabled"=dword:00000000
 
-; Cấu hình DNS chặn quảng cáo qua AdGuard Home
+; Cấu hình DNS tự động hỗ trợ ECS (chặn quảng cáo bởi HaGeZi's Pro++ và ABPVN)
 "DnsOverHttpsMode"="automatic"
-"DnsOverHttpsTemplates"="https://adguard.bibica.net/dns-query{?dns}"
+"DnsOverHttpsTemplates"="https://iabucttpma.cloudflare-gateway.com/dns-query{?dns}"
 
 ; Hiển thị đầy đủ URL trên thanh địa chỉ
 "ShowFullUrlsInAddressBar"=dword:00000001
@@ -185,4 +185,5 @@ Windows Registry Editor Version 5.00
 "8"="ntrb.qc.coccoc.com"
 "9"="context.qc.coccoc.com"
 "10"="qcvod.coccoc.com"
+
 
