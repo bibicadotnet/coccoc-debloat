@@ -1,5 +1,5 @@
 <#
-Coc Coc Browser Installer v2.0
+Cốc Cốc Browser Installer v2.0
 - Fetches official Browser-bin via Omaha API (no auto-update)
 - Extracts: .crx -> setup.exe -> browser.7z -> Browser-bin
 - Installs and creates clean shortcuts
@@ -15,7 +15,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 Clear-Host
-Write-Host "Coc Coc Browser Installer v2.0" -BackgroundColor DarkGreen
+Write-Host "Cốc Cốc Browser Installer v2.0" -BackgroundColor DarkGreen
 
 # Check Windows version (Windows 10+ only)
 $winVer = [System.Environment]::OSVersion.Version
@@ -154,6 +154,51 @@ if ($LASTEXITCODE -gt 1) {
 $browserBinSrc = Get-ChildItem $binDir -Directory -Filter "Browser-bin" | Select-Object -First 1
 if (-not $browserBinSrc) { $browserBinSrc = Get-Item $binDir }
 
+# Clean up Browser-bin before install
+# Browser-bin\{version}\Dictionaries -> delete all files
+$dictDir = Get-ChildItem $browserBinSrc.FullName -Directory -Filter "Dictionaries" -Recurse | Select-Object -First 1
+if ($dictDir) {
+    Get-ChildItem $dictDir.FullName -File | Remove-Item -Force -ErrorAction SilentlyContinue
+    Write-Host "Cleared Dictionaries." -ForegroundColor DarkGray
+}
+
+# Browser-bin\{version}\Extensions -> keep only specific files, delete the rest, then add custom extensions
+$extDir = Get-ChildItem $browserBinSrc.FullName -Directory -Filter "Extensions" -Recurse | Select-Object -First 1
+if ($extDir) {
+    $filesToKeep = @(
+        "jdfkmiabjpfjacifcmihfdjhpnjpiick.json",
+        "savior.crx",
+        "google-search-clean.crx",
+        "kfjpnijdkpendafdhdaoeoafdnpfdfpk.json"
+    )
+    Get-ChildItem $extDir.FullName -File | Where-Object { $_.Name -notin $filesToKeep } |
+        Remove-Item -Force -ErrorAction SilentlyContinue
+
+    # Download custom extensions
+    $extDownloads = @{
+        "google-search-clean.crx"          = "https://github.com/bibicadotnet/coccoc-portable/raw/refs/heads/main/Extensions/google-search-clean.crx"
+        "kfjpnijdkpendafdhdaoeoafdnpfdfpk.json" = "https://raw.githubusercontent.com/bibicadotnet/coccoc-portable/refs/heads/main/Extensions/kfjpnijdkpendafdhdaoeoafdnpfdfpk.json"
+    }
+    $wcExt = New-Object System.Net.WebClient
+    foreach ($entry in $extDownloads.GetEnumerator()) {
+        try {
+            $wcExt.DownloadFile($entry.Value, (Join-Path $extDir.FullName $entry.Key))
+            Write-Host "Downloaded: $($entry.Key)" -ForegroundColor DarkGray
+        } catch {
+            Write-Host "Warning: Failed to download $($entry.Key): $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+    $wcExt.Dispose()
+    Write-Host "Cleaned Extensions." -ForegroundColor DarkGray
+}
+
+# Delete browser_proxy.exe from Browser-bin root
+$proxyExe = Join-Path $browserBinSrc.FullName "browser_proxy.exe"
+if (Test-Path $proxyExe) {
+    Remove-Item $proxyExe -Force -ErrorAction SilentlyContinue
+    Write-Host "Removed browser_proxy.exe." -ForegroundColor DarkGray
+}
+
 # Kill running Coc Coc processes
 Write-Host "`nStopping Coc Coc processes..." -ForegroundColor Cyan
 @("browser", "CocCocUpdate", "CocCocCrashHandler") | ForEach-Object {
@@ -247,7 +292,7 @@ Remove-Item $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "`nRestarting Explorer..." -ForegroundColor Cyan
 Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
 
-Write-Host "`nCốc Cốc installation completed!" -BackgroundColor DarkGreen
+Write-Host "`nCốc Cốc $version ($useArch) installed!" -BackgroundColor DarkGreen
 
 Write-Host "`nNOTICE: To update Cốc Cốc when needed, please:" -ForegroundColor Cyan -BackgroundColor DarkGreen
 Write-Host "1. Open PowerShell with Administrator privileges" -ForegroundColor White
