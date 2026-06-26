@@ -9,6 +9,9 @@ Mục tiêu: cố gắng làm sạch mọi thứ không cần thiết, tối ưu
 | Tính năng | Trạng thái |
 |----------|------------|
 | Tiện ích mặc định (Từ Điển, Rủng Rỉnh) | Đã tắt |
+| Side Panel | Đã tắt |
+| Split View | Đã tắt |
+| Cốc Cốc Savior popup/ads​ | Đã tắt |
 | **Passwords Manager** | Đã tắt |
 | Extension Tab mới (New Tab) | Thay thế bằng trang sạch không quảng cáo |
 | Extension Google Search Clean | Thay thế thay thế tìm kiếm mặc định bằng Google |
