@@ -145,7 +145,7 @@ function New-CocCocProfile {
             }
             $shortcutPath = Join-Path $desktop $shortcutName
 
-            $arguments = "--no-first-run --no-default-browser-check --disable-features=CocCocSplitView,SidePanel --profile-directory=`"$profileFolder`""
+            $arguments = "--no-first-run --no-default-browser-check --disable-features=OutdatedBuildDetector,CocCocAskAi,ExtensionManifestV2Unsupported,ExtensionManifestV2Disabled --profile-directory=`"$profileFolder`""
             if ($useCustomPath) {
                 $escapedPath = $profileBasePath -replace '/', '\'
                 $arguments += " --user-data-dir=`"$escapedPath\$profileFolder`""
