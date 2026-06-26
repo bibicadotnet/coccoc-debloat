@@ -1,10 +1,3 @@
-﻿<#
-Cốc Cốc Browser Installer v2.1
-- Fetches official Browser-bin via Omaha API (no auto-update)
-- Extracts: .crx -> setup.exe -> browser.7z -> Browser-bin
-- Installs and creates clean shortcuts
-#>
-
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 | Out-Null
 
