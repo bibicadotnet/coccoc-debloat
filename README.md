@@ -9,7 +9,7 @@ Mục tiêu: cố gắng làm sạch mọi thứ không cần thiết, tối ưu
 | Tính năng | Trạng thái |
 |----------|------------|
 | Tiện ích mặc định (Từ Điển, Rủng Rỉnh) | Đã tắt |
-| Passwords Manager | Đã tắt |
+| **Passwords Manager** | Đã tắt |
 | Extension Tab mới (New Tab) | Thay thế bằng trang sạch không quảng cáo |
 | Extension Google Search Clean | Thay thế thay thế tìm kiếm mặc định bằng Google |
 | `CocCocCrashHandler` (tiến trình nền) | Đã tắt |
@@ -34,6 +34,28 @@ irm https://go.bibica.net/coccoc | iex
 ```
 
 - Chạy lại mỗi khi cần cập nhập lên phiên bản mới nhất
+
+### Chặn Cốc Cốc Savior popup/ads​
+Cốc Cốc Savior là công cụ download video rất mạnh được Cốc Cốc duy trì nhiều năm, thi thoảng nó hiện ra 1 số popup/ads hơi phiền
+
+- Có thể chặn bằng uBlock Origin qua Filter lists → Import thêm vào
+
+```
+https://raw.githubusercontent.com/bibicadotnet/ublock-filters/main/coc-coc-savior.txt
+```
+
+- Hoặc thêm trực tiếp 4 rule
+
+```
+##savior-host
+###mobile-wrapper
+###onboard-nmp
+###onboard-yaa
+```
+
+### Thay thế tìm kiếm mặc định
+
+Cốc Cốc Debloat tự cài đặt extension [Google Search Clean](https://github.com/bibicadotnet/Google-Search-Clean) khi lần đầu sử dụng (extension sau khi cài sẽ tắt theo mặc định), nó sẽ dùng Google làm tìm kiếm mặc định, xóa bớt phần AI Overview và dọn URL tracking giúp tìm kiếm nhanh hơn
 
 ## 🧑‍💼 Tạo profile riêng biệt
 
