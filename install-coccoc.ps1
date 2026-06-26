@@ -155,14 +155,12 @@ $browserBinSrc = Get-ChildItem $binDir -Directory -Filter "Browser-bin" | Select
 if (-not $browserBinSrc) { $browserBinSrc = Get-Item $binDir }
 
 # Clean up Browser-bin before install
-# Browser-bin\{version}\Dictionaries -> delete all files
 $dictDir = Get-ChildItem $browserBinSrc.FullName -Directory -Filter "Dictionaries" -Recurse | Select-Object -First 1
 if ($dictDir) {
     Get-ChildItem $dictDir.FullName -File | Remove-Item -Force -ErrorAction SilentlyContinue
     Write-Host "Cleared Dictionaries." -ForegroundColor DarkGray
 }
 
-# Browser-bin\{version}\Extensions -> keep only specific files, delete the rest, then add custom extensions
 $extDir = Get-ChildItem $browserBinSrc.FullName -Directory -Filter "Extensions" -Recurse | Select-Object -First 1
 if ($extDir) {
     $filesToKeep = @(
@@ -206,7 +204,7 @@ Write-Host "`nStopping Coc Coc processes..." -ForegroundColor Cyan
 }
 Start-Sleep -Milliseconds 800
 
-# Remove old installation (both paths to handle x64<->x86 migration)
+# Remove old installation
 Write-Host "Removing old installation..." -ForegroundColor Cyan
 @("${env:ProgramFiles}\CocCoc", "${env:ProgramFiles(x86)}\CocCoc") | ForEach-Object {
     if (Test-Path $_) {
@@ -216,7 +214,7 @@ Write-Host "Removing old installation..." -ForegroundColor Cyan
     }
 }
 
-# Remove leftover scheduled tasks from old installer
+# Remove leftover scheduled tasks
 Get-ScheduledTask -TaskName "CocCoc*" -ErrorAction SilentlyContinue |
     Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
 
