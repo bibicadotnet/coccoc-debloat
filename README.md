@@ -4,7 +4,7 @@ Mục tiêu: cố gắng làm sạch mọi thứ không cần thiết, tối ưu
 
 ---
 
-## Các tính năng đã tắt hoặc điều chỉnh
+# Các tính năng đã tắt hoặc điều chỉnh
 
 | Tính năng | Trạng thái |
 |----------|------------|
@@ -21,7 +21,7 @@ Mục tiêu: cố gắng làm sạch mọi thứ không cần thiết, tối ưu
 
 ---
 
-## ⚙️ Cách cài đặt / cập nhật
+# ⚙️ Cách cài đặt / cập nhật
 
 ### Chạy script PowerShell
 
@@ -58,7 +58,7 @@ https://raw.githubusercontent.com/bibicadotnet/ublock-filters/main/coc-coc-savio
 
 Cốc Cốc Debloat tự cài đặt extension [Google Search Clean](https://github.com/bibicadotnet/Google-Search-Clean) khi lần đầu sử dụng (extension sau khi cài sẽ tắt theo mặc định), nó sẽ dùng Google làm tìm kiếm mặc định, xóa bớt phần AI Overview và dọn URL tracking giúp tìm kiếm nhanh hơn
 
-## 🧑‍💼 Tạo profile riêng biệt
+# 🧑‍💼 Tạo profile riêng biệt
 
 - Có thể tạo nhiều shortcut profile khác nhau (hỗ trợ tùy chọn nơi chứa profile riêng) cho từng mục đích sử dụng (ví dụ: làm việc, học tập, giải trí).
 
