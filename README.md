@@ -34,6 +34,7 @@ irm https://go.bibica.net/coccoc | iex
 ```
 
 - Chạy lại mỗi khi cần cập nhập lên phiên bản mới nhất
+- Nếu bạn dùng Windows7/8 thì download bản Portable [109.0.5414.132](https://github.com/bibicadotnet/coccoc-portable/releases/download/coccoc-portable-x64_109.0.5414.132_v1.0.3/coccoc-portable-x64_109.0.5414.132_v1.0.3.zip) dùng tiện hơn, khỏi phải cài đặt lằng nhằng
 
 ### Chặn Cốc Cốc Savior popup/ads​
 Cốc Cốc Savior là công cụ download video rất mạnh được Cốc Cốc duy trì nhiều năm, thi thoảng nó hiện ra 1 số popup/ads hơi phiền
