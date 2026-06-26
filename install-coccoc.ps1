@@ -1,5 +1,5 @@
 <#
-Cốc Cốc Browser Installer v2.0
+Cốc Cốc Browser Installer v2.1
 - Fetches official Browser-bin via Omaha API (no auto-update)
 - Extracts: .crx -> setup.exe -> browser.7z -> Browser-bin
 - Installs and creates clean shortcuts
@@ -15,7 +15,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 Clear-Host
-Write-Host "Cốc Cốc Browser Installer v2.0" -BackgroundColor DarkGreen
+Write-Host "Cốc Cốc Browser Installer v2.1" -BackgroundColor DarkGreen
 
 # Check Windows version (Windows 10+ only)
 $winVer = [System.Environment]::OSVersion.Version
@@ -197,8 +197,8 @@ if (Test-Path $proxyExe) {
     Write-Host "Removed browser_proxy.exe." -ForegroundColor DarkGray
 }
 
-# Kill running Coc Coc processes
-Write-Host "`nStopping Coc Coc processes..." -ForegroundColor Cyan
+# Kill running Cốc Cốc processes
+Write-Host "`nStopping Cốc Cốc processes..." -ForegroundColor Cyan
 @("browser", "CocCocUpdate", "CocCocCrashHandler") | ForEach-Object {
     Get-Process -Name $_ -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 }
@@ -283,8 +283,101 @@ if ($browserExe) {
     Write-Host "Warning: browser.exe not found in $installDir" -ForegroundColor Yellow
 }
 
+# Configure Cốc Cốc Adblock
+Write-Host "Configuring Cốc Cốc built-in Adblock..." -ForegroundColor Cyan
+$prefsDir = "$env:LOCALAPPDATA\CocCoc\Browser\User Data\Default"
+$prefsPath = Join-Path $prefsDir "Preferences"
+
+if (!(Test-Path $prefsDir)) {
+    New-Item -ItemType Directory -Path $prefsDir -Force | Out-Null
+}
+
+$adblockUrl = "https://raw.githubusercontent.com/bibicadotnet/ublock-filters/main/coc-coc-savior.txt"
+$defaultSubscriptions = @(
+    "https://easylist-downloads.adblockplus.org/easylist.txt",
+    "https://easylist-downloads.adblockplus.org/exceptionrules.txt",
+    "https://easylist-downloads.adblockplus.org/abp-filters-anti-cv.txt",
+    "https://coccoc.com/adblock/coccoc_standard.txt",
+    "https://easylist-downloads.adblockplus.org/antiadblockfilters.txt",
+    "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt",
+    "https://easylist-downloads.adblockplus.org/abpvn.txt"
+)
+
+# Read existing Preferences or create a new PSCustomObject
+$prefs = if (Test-Path $prefsPath) {
+    try {
+        Get-Content $prefsPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    } catch {
+        New-Object PSObject
+    }
+} else {
+    New-Object PSObject
+}
+
+if ($null -eq $prefs) { $prefs = New-Object PSObject }
+if ($null -eq $prefs.filtering) { $prefs | Add-Member -NotePropertyName "filtering" -NotePropertyValue (New-Object PSObject) }
+if ($null -eq $prefs.filtering.configurations) { $prefs.filtering | Add-Member -NotePropertyName "configurations" -NotePropertyValue (New-Object PSObject) }
+
+if ($null -eq $prefs.filtering.configurations.adblock) {
+    $adblockObj = [PSCustomObject]@{
+        enabled = $true
+        domains = @()
+        filters = @()
+        subscriptions = $defaultSubscriptions + $adblockUrl
+    }
+    $prefs.filtering.configurations | Add-Member -NotePropertyName "adblock" -NotePropertyValue $adblockObj
+} else {
+    # If adblock config exists, make sure the URL is in the subscriptions array
+    $subList = [System.Collections.Generic.List[string]]::new()
+    if ($prefs.filtering.configurations.adblock.subscriptions -is [System.Array]) {
+        foreach ($sub in $prefs.filtering.configurations.adblock.subscriptions) {
+            $subList.Add($sub)
+        }
+    }
+    if (-not $subList.Contains($adblockUrl)) {
+        $subList.Add($adblockUrl)
+    }
+    $prefs.filtering.configurations.adblock.subscriptions = $subList.ToArray()
+    $prefs.filtering.configurations.adblock.enabled = $true
+}
+
+$newPrefsJson = $prefs | ConvertTo-Json -Depth 20 -Compress
+[System.IO.File]::WriteAllText($prefsPath, $newPrefsJson, [System.Text.Encoding]::UTF8)
+
+# Disable Cốc Cốc startup launch in Local State
+Write-Host "Disabling Cốc Cốc auto-launch on Windows startup..." -ForegroundColor Cyan
+$localStatePath = "$env:LOCALAPPDATA\CocCoc\Browser\User Data\Local State"
+$localStateDir = Split-Path $localStatePath
+if (!(Test-Path $localStateDir)) {
+    New-Item -ItemType Directory -Path $localStateDir -Force | Out-Null
+}
+$localState = if (Test-Path $localStatePath) {
+    try {
+        Get-Content $localStatePath -Raw -Encoding UTF8 | ConvertFrom-Json
+    } catch {
+        New-Object PSObject
+    }
+} else {
+    New-Object PSObject
+}
+if ($null -eq $localState) { $localState = New-Object PSObject }
+if ($null -eq $localState.launch_on_login) { 
+    $localState | Add-Member -NotePropertyName "launch_on_login" -NotePropertyValue (New-Object PSObject)
+}
+if ($null -eq $localState.launch_on_login.foreground) { 
+    $localState.launch_on_login | Add-Member -NotePropertyName "foreground" -NotePropertyValue (New-Object PSObject)
+}
+if ($null -eq $localState.launch_on_login.foreground.enabled) {
+    $localState.launch_on_login.foreground | Add-Member -NotePropertyName "enabled" -NotePropertyValue $false -Force
+} else {
+    $localState.launch_on_login.foreground.enabled = $false
+}
+$newLocalStateJson = $localState | ConvertTo-Json -Depth 20 -Compress
+[System.IO.File]::WriteAllText($localStatePath, $newLocalStateJson, [System.Text.Encoding]::UTF8)
+
 # Cleanup temp folder
 Remove-Item $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+
 
 # Restart Explorer to apply icon/shortcut changes
 Write-Host "`nRestarting Explorer..." -ForegroundColor Cyan
