@@ -14,7 +14,7 @@ Mục tiêu: cố gắng làm sạch mọi thứ không cần thiết, tối ưu
 | Cốc Cốc Savior popup/ads​ | Đã tắt |
 | **Passwords Manager** | Đã tắt |
 | Extension Tab mới (New Tab) | Thay thế bằng trang sạch không quảng cáo |
-| Extension Google Search Clean | Thay thế thay thế tìm kiếm mặc định bằng Google |
+| Extension Google Search Clean | Thay thế tìm kiếm mặc định bằng Google |
 | `CocCocCrashHandler` (tiến trình nền) | Đã tắt |
 | `CocCocUpdate` (tự động cập nhật) | Đã tắt |
 | Gửi dữ liệu về máy chủ Google/Cốc Cốc | Hầu hết đã bị vô hiệu hóa |
