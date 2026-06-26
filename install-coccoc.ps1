@@ -1,4 +1,4 @@
-<#
+﻿<#
 Cốc Cốc Browser Installer v2.1
 - Fetches official Browser-bin via Omaha API (no auto-update)
 - Extracts: .crx -> setup.exe -> browser.7z -> Browser-bin
