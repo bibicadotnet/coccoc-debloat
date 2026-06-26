@@ -277,7 +277,7 @@ if ($browserExe) {
 }
 
 # Configure Cốc Cốc Adblock
-Write-Host "Configuring Cốc Cốc built-in Adblock..." -ForegroundColor Cyan
+Write-Host "Disabling Cốc Cốc Savior popup/ads by built-in Adblock..." -ForegroundColor Cyan
 $prefsDir = "$env:LOCALAPPDATA\CocCoc\Browser\User Data\Default"
 $prefsPath = Join-Path $prefsDir "Preferences"
 
