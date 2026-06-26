@@ -12,6 +12,7 @@
 | Tính năng | Trạng thái |
 |----------|------------|
 | Tiện ích mặc định (Từ Điển, Rủng Rỉnh) | Đã tắt |
+| Passwords Manager | Đã tắt |
 | Extension Tab mới (New Tab) | Thay thế bằng trang sạch không quảng cáo |
 | Extension Google Search Clean | Thay thế thay thế tìm kiếm mặc định bằng Google |
 | `CocCocCrashHandler` (tiến trình nền) | Đã tắt |
