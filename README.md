@@ -1,9 +1,6 @@
----
+# 🧼 Cốc Cốc Debloat
 
-# 🧼 Cốc Cốc Debloat sạch nhất có thể
-
->
-  Mục tiêu: giống giao diện Chrome/Chromium thuần, tối ưu hiệu năng, bảo vệ quyền riêng tư, dễ tùy chỉnh theo nhu cầu cá nhân.
+Mục tiêu: cố gắng làm sạch mọi thứ không cần thiết, tối ưu hiệu năng, bảo vệ quyền riêng tư, dễ tùy chỉnh theo nhu cầu cá nhân.
 
 ---
 
@@ -29,6 +26,8 @@
 ### Chạy script PowerShell
 
 > ⚠️ Yêu cầu chạy PowerShell với quyền **Administrator**
+
+Cốc Cốc Debloat được cài đặt trực tiếp qua Omaha API, không dùng bản setup mặc định, hạn chế các lỗi cài đặt [không thành công](https://www.facebook.com/groups/CocCocGroup/posts/2356258015130605)
 
 ```powershell
 irm https://go.bibica.net/coccoc | iex
