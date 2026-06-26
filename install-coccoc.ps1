@@ -341,6 +341,24 @@ if ($null -eq $prefs.filtering.configurations.adblock) {
     $prefs.filtering.configurations.adblock.enabled = $true
 }
 
+# Disable Split View and Sidebar
+Write-Host "Disabling Cốc Cốc Split View and Sidebar..." -ForegroundColor Cyan
+# Disable Split View (pin_split_tab_button)
+if ($null -eq $prefs.browser) { $prefs | Add-Member -NotePropertyName "browser" -NotePropertyValue (New-Object PSObject) }
+if ($null -eq $prefs.browser.pin_split_tab_button) {
+    $prefs.browser | Add-Member -NotePropertyName "pin_split_tab_button" -NotePropertyValue $false -Force
+} else {
+    $prefs.browser.pin_split_tab_button = $false
+}
+
+# Disable Sidebar docking
+if ($null -eq $prefs.side_panel) { $prefs | Add-Member -NotePropertyName "side_panel" -NotePropertyValue (New-Object PSObject) }
+if ($null -eq $prefs.side_panel.coccoc_sidebar_docking_mode) {
+    $prefs.side_panel | Add-Member -NotePropertyName "coccoc_sidebar_docking_mode" -NotePropertyValue $false -Force
+} else {
+    $prefs.side_panel.coccoc_sidebar_docking_mode = $false
+}
+
 $newPrefsJson = $prefs | ConvertTo-Json -Depth 20 -Compress
 [System.IO.File]::WriteAllText($prefsPath, $newPrefsJson, [System.Text.Encoding]::UTF8)
 
