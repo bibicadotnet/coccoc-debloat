@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Tạo profile mới cho trình duyệt Cốc Cốc (mặc định tắt SplitView và SidePanel)
+    Tạo profile mới cho trình duyệt Cốc Cốc
 .DESCRIPTION
     Script tạo shortcut đơn giản trên Desktop
     - Hỗ trợ tên profile: chữ thường, hoa, số và dấu gạch dưới    
