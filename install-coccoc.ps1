@@ -8,7 +8,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 Clear-Host
-Write-Host "Cốc Cốc Browser Installer v2.2 (3-Layer Fallback)" -BackgroundColor DarkGreen
+Write-Host "Cốc Cốc Browser Installer v2.2 (Native API Payload)" -BackgroundColor DarkGreen
 
 # Check Windows version (Windows 10+ only)
 $winVer = [System.Environment]::OSVersion.Version
@@ -39,30 +39,38 @@ $downloadUrl = $null
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # ====================================================================
-# LAYER 1: Query the Omaha API
+# LAYER 1: Query Omaha API using Native Payload
 # ====================================================================
 Write-Host "LAYER 1: Querying Omaha update server..." -ForegroundColor Cyan
 $omahaUrl = "https://update.coccoc.com/service/update2/json"
 $omahaHeaders = @{
-    "User-Agent" = "CocCocUpdater/148.0.7778.254"
+    "User-Agent" = "CocCocUpdater/0.0.0.0"
     "Accept"     = "application/json"
 }
-$bodyX64 = '{"request":{"@os":"win","@updater":"CocCocUpdater","acceptformat":"crx3,download","protocol":"4.0","os":{"arch":"x86_64","platform":"Windows","version":"10.0"},"updaterversion":"148.0.7778.254","apps":[{"appid":"{C0CC0CBB-47DD-46FF-A04D-7011A06486E1}","version":"0.0.0.0","ap":"arch_x64","updatecheck":{}}]}}'
-$bodyX86 = '{"request":{"@os":"win","@updater":"CocCocUpdater","acceptformat":"crx3,download","protocol":"4.0","os":{"arch":"x86","platform":"Windows","version":"10.0"},"updaterversion":"148.0.7778.254","apps":[{"appid":"{C0CC0CBB-47DD-46FF-A04D-7011A06486E1}","version":"0.0.0.0","updatecheck":{}}]}}'
+
+$bodyX64 = '{"request":{"@os":"win","@updater":"CocCocUpdater","acceptformat":"crx3,download,puff,run,xz,zucc","apps":[{"ap":"arch_x64","appid":"{c0cc0cbb-47dd-46ff-a04d-7011a06486e1}","brand":"XXXX","enabled":true,"installsource":"taggedmi","updatecheck":{"sameversionupdate":true},"version":"0.0.0.0"}],"arch":"x86","ismachine":true,"os":{"arch":"x86_64","platform":"Windows","version":"10.0"},"prodversion":"149.0.7827.202","protocol":"4.0","updaterversion":"0.0.0.0","wow64":true}}'
+$bodyX86 = '{"request":{"@os":"win","@updater":"CocCocUpdater","acceptformat":"crx3,download,puff,run,xz,zucc","apps":[{"ap":"","appid":"{c0cc0cbb-47dd-46ff-a04d-7011a06486e1}","brand":"XXXX","enabled":true,"installsource":"taggedmi","updatecheck":{"sameversionupdate":true},"version":"0.0.0.0"}],"arch":"x86","ismachine":true,"os":{"arch":"x86","platform":"Windows","version":"10.0"},"prodversion":"149.0.7827.202","protocol":"4.0","updaterversion":"0.0.0.0","wow64":false}}'
 $omahaBody = if ($useArch -eq "x64") { $bodyX64 } else { $bodyX86 }
 
 try {
     $resp = Invoke-WebRequest -Uri $omahaUrl -Method POST -Body $omahaBody -ContentType "application/json" -Headers $omahaHeaders -UseBasicParsing
     $raw = $resp.Content
     if ($raw.StartsWith(")]}'")) { $raw = $raw.Substring(4) }
-    $updateCheck = ($raw | ConvertFrom-Json).response.apps[0].updatecheck
+    $jsonResp = $raw | ConvertFrom-Json
+    $updateCheck = $jsonResp.response.apps[0].updatecheck
 
-    if ($updateCheck.status -eq "ok") {
+    if ($updateCheck.status -eq "ok" -and $updateCheck.pipelines) {
         $version = $updateCheck.nextversion
+        
         $downloadUrl = $updateCheck.pipelines[0].operations[0].urls[0].url
+        
+        if (-not $downloadUrl) {
+            $downloadUrl = $updateCheck.urls.url[0].codebase
+        }
+        
         Write-Host "API returned version: $version" -ForegroundColor Green
     } else {
-        Write-Host "API error: $($updateCheck.status). Proceeding to fallback..." -ForegroundColor Yellow
+        Write-Host "API error or noupdate: $($updateCheck.status). Proceeding to fallback..." -ForegroundColor Yellow
     }
 } catch {
     Write-Host "API request failed: $($_.Exception.Message). Proceeding to fallback..." -ForegroundColor Yellow
@@ -74,7 +82,6 @@ try {
 if (-not $version -or -not $downloadUrl) {
     Write-Host "LAYER 2: Downloading base machine setup to extract version..." -ForegroundColor Cyan
     
-    # Select appropriate machine installer based on user architecture preference
     $machineSetupUrl = if ($useArch -eq "x64") { "https://files2.coccoc.com/browser/x64/coccoc_en_machine.exe" } else { "https://files2.coccoc.com/browser/coccoc_en_machine.exe" }
     $tempSetupPath = Join-Path $env:TEMP "coccoc_machine_temp.exe"
     
@@ -102,14 +109,14 @@ if (-not $version -or -not $downloadUrl) {
                     if ($req.StatusCode -eq 200) {
                         $version = $testVersion
                         $downloadUrl = $testUrl
-                        Write-Host "`n Found valid URL at: $testVersion" -ForegroundColor Green
+                        Write-Host "`n✅ Found valid URL at: $testVersion" -ForegroundColor Green
                         break
                     }
                 } catch {
-                    # 404 File not found, ignore and continue looping
+                    # Ignore 404
                 }
             }
-            Write-Host "" # Clear the dangling NoNewline output
+            Write-Host ""
         }
         Remove-Item $tempSetupPath -Force -ErrorAction SilentlyContinue
     } catch {
@@ -134,11 +141,9 @@ Write-Host "Download URL  : $downloadUrl" -ForegroundColor DarkGray
 # Begin Installation Process
 # ====================================================================
 
-# Create temp folder
 $tempRoot = Join-Path $env:TEMP ("coccoc_" + [System.IO.Path]::GetRandomFileName().Replace(".", ""))
 New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
 
-# Download Payload (.crx or .exe depending on which layer succeeded)
 $payloadFile = Join-Path $tempRoot "coccoc_payload.tmp"
 Write-Host "`nDownloading payload ($useArch)..." -ForegroundColor Cyan
 try {
@@ -149,7 +154,6 @@ try {
     Write-Host "Error: Download failed. $($_.Exception.Message)" -ForegroundColor Red; exit 1
 }
 
-# Check if 7-Zip is installed, install if missing
 $7zExe = "${env:ProgramFiles}\7-Zip\7z.exe"
 if (-not (Test-Path $7zExe)) { $7zExe = "${env:ProgramFiles(x86)}\7-Zip\7z.exe" }
 
@@ -171,11 +175,9 @@ if (-not (Test-Path $7zExe)) {
     if (-not (Test-Path $7zExe)) {
         Write-Host "Error: 7z.exe not found after install." -ForegroundColor Red; exit 1
     }
-} else {
-    Write-Host "7-Zip found: $7zExe" -ForegroundColor DarkGray
 }
 
-# Extract Payload intelligently (handles both .crx and .exe)
+# 7-Zip is smart enough to handle both .crx (ZIP archive) and .exe (SFX archive)
 Write-Host "Extracting payload..." -ForegroundColor Cyan
 $extractDir = Join-Path $tempRoot "extract1"
 New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
@@ -184,11 +186,9 @@ if ($LASTEXITCODE -gt 1) {
     Write-Host "Error: Failed to extract payload (exit $LASTEXITCODE)" -ForegroundColor Red; exit 1
 }
 
-# Check if browser.7z is already present (Happens if downloaded file was direct .exe)
 $browser7z = Get-ChildItem $extractDir -Filter "browser.7z" -Recurse | Select-Object -First 1
 
 if (-not $browser7z) {
-    # If not found, it must be a CRX wrapper. Extract the nested setup.exe.
     $setupExe = Get-ChildItem $extractDir -Filter "*coccocsetup.exe" -Recurse | Select-Object -First 1
     if (-not $setupExe) {
         Write-Host "Error: Cannot find browser.7z or coccocsetup.exe in payload!" -ForegroundColor Red; exit 1
@@ -205,7 +205,6 @@ if (-not $browser7z) {
     Write-Host "Error: browser.7z not found after all extraction attempts!" -ForegroundColor Red; exit 1
 }
 
-# Extract browser.7z -> Browser-bin
 Write-Host "Extracting browser.7z (this may take a while)..." -ForegroundColor Cyan
 $binDir = Join-Path $tempRoot "bin"
 New-Item -ItemType Directory -Path $binDir -Force | Out-Null
@@ -217,7 +216,6 @@ if ($LASTEXITCODE -gt 1) {
 $browserBinSrc = Get-ChildItem $binDir -Directory -Filter "Browser-bin" | Select-Object -First 1
 if (-not $browserBinSrc) { $browserBinSrc = Get-Item $binDir }
 
-# Clean up Browser-bin before install
 $dictDir = Get-ChildItem $browserBinSrc.FullName -Directory -Filter "Dictionaries" -Recurse | Select-Object -First 1
 if ($dictDir) {
     Get-ChildItem $dictDir.FullName -File | Remove-Item -Force -ErrorAction SilentlyContinue
@@ -235,7 +233,6 @@ if ($extDir) {
     Get-ChildItem $extDir.FullName -File | Where-Object { $_.Name -notin $filesToKeep } |
         Remove-Item -Force -ErrorAction SilentlyContinue
 
-    # Download custom extensions
     $extDownloads = @{
         "google-search-clean.crx"          = "https://github.com/bibicadotnet/coccoc-portable/raw/refs/heads/main/Extensions/google-search-clean.crx"
         "kfjpnijdkpendafdhdaoeoafdnpfdfpk.json" = "https://raw.githubusercontent.com/bibicadotnet/coccoc-portable/refs/heads/main/Extensions/kfjpnijdkpendafdhdaoeoafdnpfdfpk.json"
@@ -253,21 +250,18 @@ if ($extDir) {
     Write-Host "Cleaned Extensions." -ForegroundColor DarkGray
 }
 
-# Delete browser_proxy.exe from Browser-bin root
 $proxyExe = Join-Path $browserBinSrc.FullName "browser_proxy.exe"
 if (Test-Path $proxyExe) {
     Remove-Item $proxyExe -Force -ErrorAction SilentlyContinue
     Write-Host "Removed browser_proxy.exe." -ForegroundColor DarkGray
 }
 
-# Kill running Cốc Cốc processes
 Write-Host "`nStopping Cốc Cốc processes..." -ForegroundColor Cyan
 @("browser", "CocCocUpdate", "CocCocCrashHandler") | ForEach-Object {
     Get-Process -Name $_ -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 }
 Start-Sleep -Milliseconds 800
 
-# Remove old installation
 Write-Host "Removing old installation..." -ForegroundColor Cyan
 @("${env:ProgramFiles}\CocCoc", "${env:ProgramFiles(x86)}\CocCoc") | ForEach-Object {
     if (Test-Path $_) {
@@ -277,11 +271,9 @@ Write-Host "Removing old installation..." -ForegroundColor Cyan
     }
 }
 
-# Remove leftover scheduled tasks
 Get-ScheduledTask -TaskName "CocCoc*" -ErrorAction SilentlyContinue |
     Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
 
-# Copy Browser-bin to install directory
 $installBase = if ($useArch -eq "x64") { $env:ProgramFiles } else { ${env:ProgramFiles(x86)} }
 $installDir  = Join-Path $installBase "CocCoc\Browser"
 Write-Host "Installing to $installDir..." -ForegroundColor Cyan
@@ -292,7 +284,6 @@ if ($LASTEXITCODE -ge 8) {
     Write-Host "Warning: robocopy exit $LASTEXITCODE, check install directory." -ForegroundColor Yellow
 }
 
-# Apply registry tweaks
 Write-Host "Applying registry tweaks..." -ForegroundColor Cyan
 try {
     $regFile = Join-Path $tempRoot "debloat.reg"
@@ -303,7 +294,6 @@ try {
     Write-Host "Skipped registry tweaks: $($_.Exception.Message)" -ForegroundColor DarkGray
 }
 
-# Find browser.exe and create shortcuts
 $browserExe = Get-ChildItem $installDir -Filter "browser.exe" -Recurse -ErrorAction SilentlyContinue |
     Select-Object -First 1
 
@@ -311,7 +301,6 @@ if ($browserExe) {
     $browserPath = $browserExe.FullName
     Write-Host "Creating shortcuts..." -ForegroundColor Cyan
 
-    # Remove old shortcuts
     @(
         [Environment]::GetFolderPath("Desktop"),
         [Environment]::GetFolderPath("CommonDesktopDirectory"),
@@ -323,7 +312,6 @@ if ($browserExe) {
         }
     }
 
-    # Create new shortcuts
     @([Environment]::GetFolderPath("Desktop"), [Environment]::GetFolderPath("CommonPrograms")) | ForEach-Object {
         if (-not (Test-Path $_)) { return }
         $shell    = New-Object -ComObject WScript.Shell
@@ -346,7 +334,6 @@ if ($browserExe) {
     Write-Host "Warning: browser.exe not found in $installDir" -ForegroundColor Yellow
 }
 
-# Configure Cốc Cốc Adblock
 Write-Host "Disabling Cốc Cốc Savior popup/ads by built-in Adblock..." -ForegroundColor Cyan
 $prefsDir = "$env:LOCALAPPDATA\CocCoc\Browser\User Data\Default"
 $prefsPath = Join-Path $prefsDir "Preferences"
@@ -366,7 +353,6 @@ $defaultSubscriptions = @(
     "https://easylist-downloads.adblockplus.org/abpvn.txt"
 )
 
-# Read existing Preferences or create a new PSCustomObject
 $prefs = if (Test-Path $prefsPath) {
     try {
         Get-Content $prefsPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -390,7 +376,6 @@ if ($null -eq $prefs.filtering.configurations.adblock) {
     }
     $prefs.filtering.configurations | Add-Member -NotePropertyName "adblock" -NotePropertyValue $adblockObj
 } else {
-    # If adblock config exists, make sure the URL is in the subscriptions array
     $subList = [System.Collections.Generic.List[string]]::new()
     if ($prefs.filtering.configurations.adblock.subscriptions -is [System.Array]) {
         foreach ($sub in $prefs.filtering.configurations.adblock.subscriptions) {
@@ -404,9 +389,7 @@ if ($null -eq $prefs.filtering.configurations.adblock) {
     $prefs.filtering.configurations.adblock.enabled = $true
 }
 
-# Disable Split View and Sidebar
 Write-Host "Disabling Cốc Cốc Split View and Sidebar..." -ForegroundColor Cyan
-# Disable Split View (pin_split_tab_button)
 if ($null -eq $prefs.browser) { $prefs | Add-Member -NotePropertyName "browser" -NotePropertyValue (New-Object PSObject) }
 if ($null -eq $prefs.browser.pin_split_tab_button) {
     $prefs.browser | Add-Member -NotePropertyName "pin_split_tab_button" -NotePropertyValue $false -Force
@@ -414,7 +397,6 @@ if ($null -eq $prefs.browser.pin_split_tab_button) {
     $prefs.browser.pin_split_tab_button = $false
 }
 
-# Disable Sidebar docking
 if ($null -eq $prefs.side_panel) { $prefs | Add-Member -NotePropertyName "side_panel" -NotePropertyValue (New-Object PSObject) }
 if ($null -eq $prefs.side_panel.coccoc_sidebar_docking_mode) {
     $prefs.side_panel | Add-Member -NotePropertyName "coccoc_sidebar_docking_mode" -NotePropertyValue $false -Force
@@ -425,7 +407,6 @@ if ($null -eq $prefs.side_panel.coccoc_sidebar_docking_mode) {
 $newPrefsJson = $prefs | ConvertTo-Json -Depth 20 -Compress
 [System.IO.File]::WriteAllText($prefsPath, $newPrefsJson, [System.Text.Encoding]::UTF8)
 
-# Disable Cốc Cốc startup launch in Local State
 Write-Host "Disabling Cốc Cốc auto-launch on Windows startup..." -ForegroundColor Cyan
 $localStatePath = "$env:LOCALAPPDATA\CocCoc\Browser\User Data\Local State"
 $localStateDir = Split-Path $localStatePath
@@ -456,10 +437,8 @@ if ($null -eq $localState.launch_on_login.foreground.enabled) {
 $newLocalStateJson = $localState | ConvertTo-Json -Depth 20 -Compress
 [System.IO.File]::WriteAllText($localStatePath, $newLocalStateJson, [System.Text.Encoding]::UTF8)
 
-# Cleanup temp folder
 Remove-Item $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
 
-# Restart Explorer to apply icon/shortcut changes
 Write-Host "`nRestarting Explorer..." -ForegroundColor Cyan
 Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
 
