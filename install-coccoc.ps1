@@ -1,14 +1,14 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 | Out-Null
 
-# Require admin
+# Require admin privileges
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://go.bibica.net/coccoc | iex`"" -Verb RunAs
     exit
 }
 
 Clear-Host
-Write-Host "Cốc Cốc Browser Installer v2.1" -BackgroundColor DarkGreen
+Write-Host "Cốc Cốc Browser Installer v2.2 (3-Layer Fallback)" -BackgroundColor DarkGreen
 
 # Check Windows version (Windows 10+ only)
 $winVer = [System.Environment]::OSVersion.Version
@@ -24,7 +24,7 @@ if (-not [Environment]::Is64BitOperatingSystem) {
     $useArch = "x86"
 } else {
     Write-Host ""
-    Write-Host "Select build:" -ForegroundColor Cyan
+    Write-Host "Select build architecture:" -ForegroundColor Cyan
     Write-Host "  [1] x64 - 64-bit (default)" -ForegroundColor Green
     Write-Host "  [2] x86 - 32-bit"
     $choice = (Read-Host "Enter choice (or press Enter for default)").Trim()
@@ -33,48 +33,117 @@ if (-not [Environment]::Is64BitOperatingSystem) {
 
 Write-Host "`nPreparing $useArch build..." -ForegroundColor Cyan
 
-# Check latest version via Omaha API
+# Prepare variables
+$version = $null
+$downloadUrl = $null
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$omahaUrl     = "https://update.coccoc.com/service/update2/json"
+# ====================================================================
+# LAYER 1: Query the Omaha API
+# ====================================================================
+Write-Host "LAYER 1: Querying Omaha update server..." -ForegroundColor Cyan
+$omahaUrl = "https://update.coccoc.com/service/update2/json"
 $omahaHeaders = @{
     "User-Agent" = "CocCocUpdater/148.0.7778.254"
     "Accept"     = "application/json"
 }
 $bodyX64 = '{"request":{"@os":"win","@updater":"CocCocUpdater","acceptformat":"crx3,download","protocol":"4.0","os":{"arch":"x86_64","platform":"Windows","version":"10.0"},"updaterversion":"148.0.7778.254","apps":[{"appid":"{C0CC0CBB-47DD-46FF-A04D-7011A06486E1}","version":"0.0.0.0","ap":"arch_x64","updatecheck":{}}]}}'
-$bodyX86  = '{"request":{"@os":"win","@updater":"CocCocUpdater","acceptformat":"crx3,download","protocol":"4.0","os":{"arch":"x86","platform":"Windows","version":"10.0"},"updaterversion":"148.0.7778.254","apps":[{"appid":"{C0CC0CBB-47DD-46FF-A04D-7011A06486E1}","version":"0.0.0.0","updatecheck":{}}]}}'
+$bodyX86 = '{"request":{"@os":"win","@updater":"CocCocUpdater","acceptformat":"crx3,download","protocol":"4.0","os":{"arch":"x86","platform":"Windows","version":"10.0"},"updaterversion":"148.0.7778.254","apps":[{"appid":"{C0CC0CBB-47DD-46FF-A04D-7011A06486E1}","version":"0.0.0.0","updatecheck":{}}]}}'
 $omahaBody = if ($useArch -eq "x64") { $bodyX64 } else { $bodyX86 }
 
-Write-Host "Checking latest version..." -ForegroundColor Cyan
 try {
-    $resp = Invoke-WebRequest -Uri $omahaUrl -Method POST -Body $omahaBody `
-        -ContentType "application/json" -Headers $omahaHeaders -UseBasicParsing
+    $resp = Invoke-WebRequest -Uri $omahaUrl -Method POST -Body $omahaBody -ContentType "application/json" -Headers $omahaHeaders -UseBasicParsing
     $raw = $resp.Content
     if ($raw.StartsWith(")]}'")) { $raw = $raw.Substring(4) }
     $updateCheck = ($raw | ConvertFrom-Json).response.apps[0].updatecheck
 
-    if ($updateCheck.status -ne "ok") {
-        Write-Host "Error: Server returned status '$($updateCheck.status)'" -ForegroundColor Red; exit 1
+    if ($updateCheck.status -eq "ok") {
+        $version = $updateCheck.nextversion
+        $downloadUrl = $updateCheck.pipelines[0].operations[0].urls[0].url
+        Write-Host "API returned version: $version" -ForegroundColor Green
+    } else {
+        Write-Host "API error: $($updateCheck.status). Proceeding to fallback..." -ForegroundColor Yellow
     }
-    $version = $updateCheck.nextversion
-    $crxUrl  = $updateCheck.pipelines[0].operations[0].urls[0].url
 } catch {
-    Write-Host "Error: Failed to contact update server. $($_.Exception.Message)" -ForegroundColor Red; exit 1
+    Write-Host "API request failed: $($_.Exception.Message). Proceeding to fallback..." -ForegroundColor Yellow
 }
 
-Write-Host "Version : $version" -ForegroundColor Green
-Write-Host "URL     : $crxUrl"
+# ====================================================================
+# LAYER 2: Extract version from coccoc_en_machine.exe and scan for URL
+# ====================================================================
+if (-not $version -or -not $downloadUrl) {
+    Write-Host "LAYER 2: Downloading base machine setup to extract version..." -ForegroundColor Cyan
+    
+    # Select appropriate machine installer based on user architecture preference
+    $machineSetupUrl = if ($useArch -eq "x64") { "https://files2.coccoc.com/browser/x64/coccoc_en_machine.exe" } else { "https://files2.coccoc.com/browser/coccoc_en_machine.exe" }
+    $tempSetupPath = Join-Path $env:TEMP "coccoc_machine_temp.exe"
+    
+    try {
+        (New-Object System.Net.WebClient).DownloadFile($machineSetupUrl, $tempSetupPath)
+        $baseVersion = (Get-Item $tempSetupPath).VersionInfo.ProductVersion
+        Write-Host "Extracted base version: $baseVersion" -ForegroundColor Yellow
+        
+        if ($baseVersion -match "^(\d+\.\d+\.\d+)\.(\d+)$") {
+            $base = $matches[1]
+            $startPatch = [int]$matches[2]
+            $endPatch = $startPatch + 100
+            
+            Write-Host "Scanning for actual download URL from patch $startPatch to $endPatch..." -ForegroundColor Yellow
+            $archPath = if ($useArch -eq "x64") { "x64" } else { "x86" }
+            
+            for ($i = $startPatch; $i -le $endPatch; $i++) {
+                $testVersion = "$base.$i"
+                $testUrl = "https://files2.coccoc.com/apps/browser/win/$archPath/$testVersion/$testVersion`_coccocsetup.exe"
+                
+                Write-Host -NoNewline "`rTesting: $testVersion ...        "
+                
+                try {
+                    $req = Invoke-WebRequest -Uri $testUrl -Method Head -UseBasicParsing -ErrorAction Stop
+                    if ($req.StatusCode -eq 200) {
+                        $version = $testVersion
+                        $downloadUrl = $testUrl
+                        Write-Host "`n Found valid URL at: $testVersion" -ForegroundColor Green
+                        break
+                    }
+                } catch {
+                    # 404 File not found, ignore and continue looping
+                }
+            }
+            Write-Host "" # Clear the dangling NoNewline output
+        }
+        Remove-Item $tempSetupPath -Force -ErrorAction SilentlyContinue
+    } catch {
+        Write-Host "Failed to extract version from machine setup: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+# ====================================================================
+# LAYER 3: Ultimate Hardcoded Fallback
+# ====================================================================
+if (-not $version -or -not $downloadUrl) {
+    Write-Host "LAYER 3: Using ultimate hardcoded fallback version..." -ForegroundColor Yellow
+    $version = "149.0.7827.206"
+    $archPath = if ($useArch -eq "x64") { "x64" } else { "x86" }
+    $downloadUrl = "https://files2.coccoc.com/apps/browser/win/$archPath/$version/$version`_coccocsetup.exe"
+}
+
+Write-Host "Target Version: $version" -ForegroundColor Green
+Write-Host "Download URL  : $downloadUrl" -ForegroundColor DarkGray
+
+# ====================================================================
+# Begin Installation Process
+# ====================================================================
 
 # Create temp folder
 $tempRoot = Join-Path $env:TEMP ("coccoc_" + [System.IO.Path]::GetRandomFileName().Replace(".", ""))
 New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
 
-# Download .crx
-$crxFile = Join-Path $tempRoot "coccoc.crx"
-Write-Host "`nDownloading ($useArch)..." -ForegroundColor Cyan
+# Download Payload (.crx or .exe depending on which layer succeeded)
+$payloadFile = Join-Path $tempRoot "coccoc_payload.tmp"
+Write-Host "`nDownloading payload ($useArch)..." -ForegroundColor Cyan
 try {
     $wc = New-Object System.Net.WebClient
-    $wc.DownloadFile($crxUrl, $crxFile)
+    $wc.DownloadFile($downloadUrl, $payloadFile)
     $wc.Dispose()
 } catch {
     Write-Host "Error: Download failed. $($_.Exception.Message)" -ForegroundColor Red; exit 1
@@ -106,33 +175,34 @@ if (-not (Test-Path $7zExe)) {
     Write-Host "7-Zip found: $7zExe" -ForegroundColor DarkGray
 }
 
-# Extract .crx
-Write-Host "Extracting .crx..." -ForegroundColor Cyan
-$crxDir = Join-Path $tempRoot "crx"
-New-Item -ItemType Directory -Path $crxDir -Force | Out-Null
-& $7zExe x "$crxFile" -o"$crxDir" -y 2>&1 | Out-Null
+# Extract Payload intelligently (handles both .crx and .exe)
+Write-Host "Extracting payload..." -ForegroundColor Cyan
+$extractDir = Join-Path $tempRoot "extract1"
+New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
+& $7zExe x "$payloadFile" -o"$extractDir" -y 2>&1 | Out-Null
 if ($LASTEXITCODE -gt 1) {
-    Write-Host "Error: Failed to extract .crx (exit $LASTEXITCODE)" -ForegroundColor Red; exit 1
+    Write-Host "Error: Failed to extract payload (exit $LASTEXITCODE)" -ForegroundColor Red; exit 1
 }
 
-$setupExe = Get-ChildItem $crxDir -Filter "*coccocsetup.exe" -Recurse | Select-Object -First 1
-if (-not $setupExe) {
-    Write-Host "Error: *coccocsetup.exe not found in .crx" -ForegroundColor Red; exit 1
-}
-Write-Host "Found: $($setupExe.Name)" -ForegroundColor DarkGray
+# Check if browser.7z is already present (Happens if downloaded file was direct .exe)
+$browser7z = Get-ChildItem $extractDir -Filter "browser.7z" -Recurse | Select-Object -First 1
 
-# Extract setup.exe -> browser.7z
-Write-Host "Extracting setup.exe..." -ForegroundColor Cyan
-$setupDir = Join-Path $tempRoot "setup"
-New-Item -ItemType Directory -Path $setupDir -Force | Out-Null
-& $7zExe x "$($setupExe.FullName)" -o"$setupDir" -y 2>&1 | Out-Null
-if ($LASTEXITCODE -gt 1) {
-    Write-Host "Error: Failed to extract setup.exe (exit $LASTEXITCODE)" -ForegroundColor Red; exit 1
-}
-
-$browser7z = Get-ChildItem $setupDir -Filter "browser.7z" -Recurse | Select-Object -First 1
 if (-not $browser7z) {
-    Write-Host "Error: browser.7z not found after extracting setup.exe" -ForegroundColor Red; exit 1
+    # If not found, it must be a CRX wrapper. Extract the nested setup.exe.
+    $setupExe = Get-ChildItem $extractDir -Filter "*coccocsetup.exe" -Recurse | Select-Object -First 1
+    if (-not $setupExe) {
+        Write-Host "Error: Cannot find browser.7z or coccocsetup.exe in payload!" -ForegroundColor Red; exit 1
+    }
+    Write-Host "Nested setup found: $($setupExe.Name). Extracting inner payload..." -ForegroundColor DarkGray
+    $setupDir = Join-Path $tempRoot "extract2"
+    New-Item -ItemType Directory -Path $setupDir -Force | Out-Null
+    & $7zExe x "$($setupExe.FullName)" -o"$setupDir" -y 2>&1 | Out-Null
+    
+    $browser7z = Get-ChildItem $setupDir -Filter "browser.7z" -Recurse | Select-Object -First 1
+}
+
+if (-not $browser7z) {
+    Write-Host "Error: browser.7z not found after all extraction attempts!" -ForegroundColor Red; exit 1
 }
 
 # Extract browser.7z -> Browser-bin
@@ -388,7 +458,6 @@ $newLocalStateJson = $localState | ConvertTo-Json -Depth 20 -Compress
 
 # Cleanup temp folder
 Remove-Item $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
-
 
 # Restart Explorer to apply icon/shortcut changes
 Write-Host "`nRestarting Explorer..." -ForegroundColor Cyan
