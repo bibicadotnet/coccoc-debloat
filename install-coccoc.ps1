@@ -8,7 +8,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 Clear-Host
-Write-Host "Cốc Cốc Browser Installer v2.2 (Native API Payload)" -BackgroundColor DarkGreen
+Write-Host "Cốc Cốc Browser Installer v2.2" -BackgroundColor DarkGreen
 
 # Check Windows version (Windows 10+ only)
 $winVer = [System.Environment]::OSVersion.Version
