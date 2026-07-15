@@ -1,7 +1,8 @@
 Windows Registry Editor Version 5.00
 
 ; Phục hồi về mặc định
-[-HKEY_CURRENT_USER\SOFTWARE\Policies\CocCoc]
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Coccoc]
+[-HKEY_CURRENT_USER\SOFTWARE\Policies\Coccoc]
 
 ; Cấu hình cài đặt
 [HKEY_CURRENT_USER\SOFTWARE\Policies\CocCoc]
