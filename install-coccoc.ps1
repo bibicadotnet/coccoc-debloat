@@ -1,6 +1,48 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 | Out-Null
 
+# Force console font to Consolas to support Vietnamese characters
+$FontCode = @'
+using System;
+using System.Runtime.InteropServices;
+
+public class ConsoleFontHelper {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct CONSOLE_FONT_INFO_EX {
+        public uint cbSize;
+        public uint nFont;
+        public short dwFontSizeX;
+        public short dwFontSizeY;
+        public int FontFamily;
+        public int FontWeight;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        public string FaceName;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern IntPtr GetStdHandle(int nStdHandle);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    public static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool bMaximumWindow, ref CONSOLE_FONT_INFO_EX lpConsoleCurrentFontEx);
+
+    private const int STD_OUTPUT_HANDLE = -11;
+
+    public static void SetFont(string fontName) {
+        IntPtr hnd = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (hnd != IntPtr.Zero) {
+            CONSOLE_FONT_INFO_EX info = new CONSOLE_FONT_INFO_EX();
+            info.cbSize = (uint)Marshal.SizeOf(info);
+            info.FaceName = fontName;
+            info.dwFontSizeY = 16;
+            SetCurrentConsoleFontEx(hnd, false, ref info);
+        }
+    }
+}
+'@
+Add-Type -TypeDefinition $FontCode -ErrorAction SilentlyContinue
+[ConsoleFontHelper]::SetFont("Consolas")
+
+
 # Require admin privileges
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; chcp 65001 | Out-Null; irm https://go.bibica.net/coccoc | iex`"" -Verb RunAs
