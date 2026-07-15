@@ -3,7 +3,7 @@ chcp 65001 | Out-Null
 
 # Require admin privileges
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://go.bibica.net/coccoc | iex`"" -Verb RunAs
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; chcp 65001 | Out-Null; irm https://go.bibica.net/coccoc | iex`"" -Verb RunAs
     exit
 }
 
@@ -406,6 +406,13 @@ if ($null -eq $prefs.side_panel.coccoc_sidebar_docking_mode) {
 
 $newPrefsJson = $prefs | ConvertTo-Json -Depth 20 -Compress
 [System.IO.File]::WriteAllText($prefsPath, $newPrefsJson, [System.Text.Encoding]::UTF8)
+
+# Reset Sidebar Ad Icons if it exists
+$adIconsPath = Join-Path $prefsDir "Sidebar\Ad Icons"
+if (Test-Path $adIconsPath) {
+    Write-Host "Sidebar Ad Icons file found. Resetting it to empty..." -ForegroundColor Yellow
+    [System.IO.File]::WriteAllText($adIconsPath, "")
+}
 
 Write-Host "Disabling Cốc Cốc auto-launch on Windows startup..." -ForegroundColor Cyan
 $localStatePath = "$env:LOCALAPPDATA\CocCoc\Browser\User Data\Local State"
