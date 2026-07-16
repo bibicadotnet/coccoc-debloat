@@ -16,7 +16,7 @@ Mục tiêu: cố gắng làm sạch mọi thứ không cần thiết, tối ưu
 | Extension Tab mới (New Tab) | Thay thế bằng trang sạch không quảng cáo |
 | Extension Google Search Clean | Thay thế tìm kiếm mặc định bằng Google |
 | `CocCocCrashHandler` (tiến trình nền) | Đã tắt |
-| `CocCocUpdate` (tự động cập nhật) | Đã tắt |
+| `CocCocUpdate` (tự động cập nhật) | Không cài |
 | Gửi dữ liệu về máy chủ Google/Cốc Cốc | Hầu hết đã bị vô hiệu hóa |
 | Quyền riêng tư | Thiết lập ở mức cao:<br> - Tắt cookie bên thứ ba<br> - Tắt thông báo<br> - Tắt định vị & cảm biến chuyển động <br> - Có thể cài đặt Canvas Blocker giúp bạn ẩn danh hơn khi lướt web|
 | DNS mặc định | Sử dụng Cloudflare Gateway DNS hỗ trợ ECS giúp tăng tốc và chặn 1 phần quảng cáo |
@@ -37,7 +37,7 @@ irm https://go.bibica.net/coccoc | iex
 ```
 
 - Chạy lại mỗi khi cần cập nhập lên phiên bản mới nhất
-- Nếu bạn dùng Windows7/8 thì download bản Portable [109.0.5414.132](https://github.com/bibicadotnet/coccoc-portable/releases/download/coccoc-portable-x64_109.0.5414.132_v1.0.3/coccoc-portable-x64_109.0.5414.132_v1.0.3.zip) dùng tiện hơn, khỏi phải cài đặt lằng nhằng
+- Nếu bạn dùng Windows7/8 thì download bản Portable [109.0.5414.132](https://github.com/bibicadotnet/coccoc-portable/releases/tag/coccoc-portable-x64_109.0.5414.132_v1.0.5) dùng tiện hơn, khỏi phải cài đặt lằng nhằng
 
 ### Chặn Cốc Cốc Savior popup/ads​
 Cốc Cốc Savior là công cụ download video rất mạnh được Cốc Cốc duy trì nhiều năm, thi thoảng nó hiện ra 1 số popup/ads hơi phiền
